@@ -9,4 +9,5 @@ public class Product {
     private Integer qty;
     private Date imported_at;
 
+
 }
