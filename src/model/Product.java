@@ -81,4 +81,23 @@ public class Product {
                 ", imported_at=" + imported_at +
                 '}';
     }
+    public static Product parseProductLine(String line) {
+        String[] fields = line.split(",");
+        if (fields.length != 5) {
+            // Handle invalid line
+            return null;
+        }
+        try {
+            String code = fields[0];
+            String name = fields[1];
+            double price = Double.parseDouble(fields[2]);
+            int qty = Integer.parseInt(fields[3]);
+            String imported_at = fields[4];
+
+            return new Product(code, name, price, qty, imported_at);
+        } catch (NumberFormatException e) {
+            // Handle parsing errors
+            return null;
+        }
+    }
 }

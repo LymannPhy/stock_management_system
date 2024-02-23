@@ -2,13 +2,20 @@ package controller;
 
 import model.Product;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+import static model.Product.parseProductLine;
+
 public class ProductController {
+    private List<Product> products;
+
+    public ProductController() {
+        products = new ArrayList<>();
+    }
     public void createProduct() {
         Scanner scanner = new Scanner(System.in);
 
@@ -44,6 +51,24 @@ public class ProductController {
         } catch (IOException e) {
             System.err.println("Error writing to transaction file: " + e.getMessage());
         }
+    }
+
+    // Method to read data from the file and parse it into Product objects
+    public void readDataFromFile(String filename) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Product product = parseProductLine(line);
+                if (product != null) {
+                    products.add(product);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading data from file: " + e.getMessage());
+        }
+    }
+    public List<Product> getProducts() {
+        return products;
     }
 
     private String serializeProduct(Product product) {
