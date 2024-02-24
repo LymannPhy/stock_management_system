@@ -2,20 +2,75 @@ import controller.ProductController;
 import model.Product;
 import view.ProductView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        ProductController controller = new ProductController();
-        //Create new product
-//        controller.createProduct();
+        // Instantiate Scanner for user input
+        Scanner scanner = new Scanner(System.in);
 
-        //Read data from tramsaction source file
-        controller.readDataFromFile("data/transaction.dat");
-        // Get the products from the controller
-        List<Product> products = controller.getProducts();
-        // Instantiate the view and display the products
-        ProductView view = new ProductView();
-        view.displayProducts(products);
+        // Create an empty list to hold products
+        List<Product> products = new ArrayList<>();
+
+        // Pass the list of products to the ProductController constructor
+        ProductController controller = new ProductController(products);
+
+        // Display menu and handle user input
+        while (true) {
+            displayMenu();
+            System.out.print("Enter your choice: ");
+            String choice = scanner.nextLine().trim();
+
+            switch (choice.toLowerCase()) {
+                case "l", "L" -> {
+                    // Read data from transaction source file
+                    controller.readDataFromFile("data/transaction.dat");
+                    // Get the products from the controller
+                    products = controller.getProducts();
+                    // Instantiate the view and display the products
+                    ProductView view = new ProductView();
+                    view.displayProducts(products);
+                }
+                case "m", "M" -> System.out.println("Random option chosen");
+                case "w", "W" -> {
+                    // Create new product
+                    controller.createProduct();
+                }
+                case "r", "R" -> {
+                    System.out.print("Enter product code: ");
+                    String productCode = scanner.nextLine().trim();
+                    Product product = controller.getProductDetailByCode(productCode);
+                    ProductView view = new ProductView();
+                    view.displayProductDetails(product);
+                    break;
+                }
+                case "e", "E" -> System.out.println("Edit option chosen");
+                case "d", "D" -> System.out.println("Delete option chosen");
+                case "s", "S" -> System.out.println("Search option chosen");
+                case "o", "O" -> System.out.println("Set Row option chosen");
+                case "c", "C" -> System.out.println("Commit option chosen");
+                case "b", "B" -> System.out.println("Backup option chosen");
+                case "k", "K" -> System.out.println("Back up option chosen");
+                case "t", "T" -> System.out.println("Restore option chosen");
+                case "h", "H" -> System.out.println("Help option chosen");
+                case "x", "X" -> {
+                    System.out.println("Exit option chosen");
+                    return; // Exit the program
+                }
+                default -> System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    private static void displayMenu() {
+        System.out.println("Application Menu");
+        System.out.println("""
+       ╔═════════════════════════════════════════════════════════════════════════════════════════════╗
+       ║ Disp(l)ay  |  Rando(m)   |   W)rite    |   R)ead     |   (E)dit   |   (D)elete  | (S)earch  ║
+       ║ Set R(o)ws |  (C)ommit   |   Res(t)ore |   Bac(k) up |   (H)elp   |   E(x)it                ║                                               ║
+       ╚═════════════════════════════════════════════════════════════════════════════════════════════╝
+        """);
     }
 }
