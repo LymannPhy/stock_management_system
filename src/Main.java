@@ -1,5 +1,6 @@
 import controller.ProductController;
 import model.Product;
+import view.MenuView;
 import view.ProductView;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class Main {
 
         // Display menu and handle user input
         while (true) {
-            displayMenu();
+            MenuView.displayMenu();
             System.out.print("Enter your choice: ");
             String choice = scanner.nextLine().trim();
 
@@ -62,15 +63,5 @@ public class Main {
                 default -> System.out.println("Invalid choice. Please try again.");
             }
         }
-    }
-
-    private static void displayMenu() {
-        System.out.println("Application Menu");
-        System.out.println("""
-       ╔═════════════════════════════════════════════════════════════════════════════════════════════╗
-       ║ Disp(l)ay  |  Rando(m)   |   W)rite    |   R)ead     |   (E)dit   |   (D)elete  | (S)earch  ║
-       ║ Set R(o)ws |  (C)ommit   |   Res(t)ore |   Bac(k) up |   (H)elp   |   E(x)it                ║                                               ║
-       ╚═════════════════════════════════════════════════════════════════════════════════════════════╝
-        """);
     }
 }
