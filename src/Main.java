@@ -23,13 +23,12 @@ public class Main {
             MenuView.displayMenu();
             System.out.print("Enter your choice: ");
             String choice = scanner.nextLine().trim();
-
             switch (choice.toLowerCase()) {
-                case "l", "L" -> {
+                case "l" -> {
                     // Read data from transaction source file
                     controller.readDataFromFile("data/transaction.dat");
                     // Get the products from the controller
-                    products = controller.getProducts();
+                    //products = controller.getProducts();
                     // Instantiate the view and display the products
                     ProductView view = new ProductView();
                     view.displayProducts(products);
@@ -44,13 +43,16 @@ public class Main {
                     String productCode = scanner.nextLine().trim();
                     Product product = controller.getProductDetailByCode(productCode);
                     ProductView view = new ProductView();
-                    view.displayProductDetails(product);
+                    //view.displayProductDetails(product);
                     break;
                 }
                 case "e", "E" -> System.out.println("Edit option chosen");
                 case "d", "D" -> System.out.println("Delete option chosen");
                 case "s", "S" -> System.out.println("Search option chosen");
-                case "o", "O" -> System.out.println("Set Row option chosen");
+                case "o" -> {
+                    ProductView view = new ProductView();
+                    view.setRow();
+                }
                 case "c", "C" -> System.out.println("Commit option chosen");
                 case "b", "B" -> System.out.println("Backup option chosen");
                 case "k", "K" -> System.out.println("Back up option chosen");

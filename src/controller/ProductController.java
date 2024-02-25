@@ -21,6 +21,10 @@ public class ProductController {
         this.nextProductNumber = loadNextProductNumber(); // Load from file or database
     }
 
+    public void setRow(){
+
+    }
+
     // Load next product number from file or database
     private int loadNextProductNumber() {
         // Implement loading logic from file or database
