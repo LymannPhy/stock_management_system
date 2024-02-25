@@ -3,10 +3,12 @@ package controller;
 import model.Product;
 
 import java.io.*;
+import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import view.ProductView;
 
 import static model.Product.parseProductLine;
 
@@ -113,4 +115,85 @@ public class ProductController {
     private String serializeProduct(Product product) {
         return String.format("%s,%s,%.2f,%d,%s", product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
     }
+    //Update Product By Code
+    public void updateProduct(String code) {
+        Scanner sure = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("# What do you want to update?");
+        System.out.println("1. All");
+        System.out.println("2. NAME");
+        System.out.println("3. UNIT PRICE");
+        System.out.println("4. QTY");
+        System.out.println("5. Back to Menu");
+        System.out.print("> Choose Option [1-5] :");
+        String choose = scanner.nextLine();
+
+        switch (choose) {
+            case "1" -> {
+                System.out.print("> Product's Name :");
+                String productName = scanner.nextLine();
+                System.out.print("> Product's Price:");
+                double productPrice = Double.parseDouble(scanner.nextLine());
+                System.out.print("> Product's QTY :");
+                int productQty = Integer.parseInt(scanner.nextLine());
+                System.out.print("[!] Are you sure you want to Update?? [Y/N] :");
+                String want = sure.next();
+                if (want.equalsIgnoreCase("y")) {
+                    for (Product product : products) {
+                        if (product.getCode().equals(code)) {
+                            product.setName(productName);
+                            product.setPrice(productPrice);
+                            product.setQty(productQty);
+                            writeProductsToFile();
+                            System.out.println("Update Product Successfully!!");
+                            return;
+                        }
+                    }
+                } else if (want.equalsIgnoreCase("n")){
+                    System.out.println("# You didn't Update Anything");
+                }
+            }
+            case "2" -> updateAttribute(code, scanner, "NAME");
+            case "3" -> updateAttribute(code, scanner, "UNIT PRICE");
+            case "4" -> updateAttribute(code, scanner, "QTY");
+            case "5" -> System.out.println("# Back to menu");
+            default-> System.out.println("# Invalid Input Choose! Please try again....");
+        }
+    }
+    //Update single
+    private void updateAttribute(String code, Scanner scanner, String attributeName) {
+        Scanner sure = new Scanner(System.in);
+        System.out.print("> Product's " + attributeName + " :");
+        String attributeValue = scanner.nextLine();
+        System.out.print("[!] Are you sure you want to Update?? [Y/N] :");
+        String want = sure.next();
+        if (want.equalsIgnoreCase("y")) {
+            for (Product product : products) {
+                if (product.getCode().equals(code)) {
+                    switch (attributeName) {
+                        case "NAME" -> product.setName(attributeValue);
+                        case "UNIT PRICE" -> product.setPrice(Double.parseDouble(attributeValue));
+                        case "QTY" -> product.setQty(Integer.parseInt(attributeValue));
+                    }
+                    writeProductsToFile();
+                    System.out.println("Update Product's " + attributeName + " Successfully!!");
+                    return;
+                }
+            }
+        }
+    }
+    // Write the data to file
+    private void writeProductsToFile() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat"))) {
+            for (Product product : products) {
+                String serializedProduct = serializeProduct(product);
+                writer.write(serializedProduct + "\n");
+                writer.flush();
+            }
+        } catch (IOException e) {
+            System.err.println("Error writing to transaction file: " + e.getMessage());
+        }
+    }
+
+
 }
