@@ -48,7 +48,7 @@ public class ProductController {
 
             List<String> serializedProducts = new ArrayList<>();
             for (int i = 0; i < amount; i++) {
-                Product newProduct = new Product("CSTAD" + (i + 1), "Product" + (i + 1), 100.00d, 10, LocalDate.now().toString());
+                Product newProduct = new Product("CSTAD-" + (i + 1), "Product" + (i + 1), 100.00d, 10, LocalDate.now().toString());
                 products.add(newProduct);
                 serializedProducts.add(serializeProduct(newProduct));
             }

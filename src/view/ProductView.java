@@ -98,7 +98,7 @@ public class ProductView {
         System.out.println("#".repeat(15));
     }
 
-        // Method to display product details
+
         // Method to display product details
     public void displayProductDetails(Product product) {
         if (product != null) {
