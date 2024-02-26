@@ -136,6 +136,14 @@ public class ProductController {
                 double productPrice = Double.parseDouble(scanner.nextLine());
                 System.out.print("> Product's QTY :");
                 int productQty = Integer.parseInt(scanner.nextLine());
+                ProductView view = new ProductView();
+                String date="";
+                for(Product product:products){
+                    if (product.getCode().equalsIgnoreCase(code)){
+                        date=product.getImported_at();
+                    }
+                }
+                view.previewAllUpdate(code,productName,productPrice,productQty,date);
                 System.out.print("[!] Are you sure you want to Update?? [Y/N] :");
                 String want = sure.next();
                 if (want.equalsIgnoreCase("y")) {
