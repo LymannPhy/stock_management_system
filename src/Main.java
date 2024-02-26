@@ -33,7 +33,7 @@ public class Main {
                     ProductView view = new ProductView();
                     view.displayProducts(products);
                 }
-                case "m", "M" -> System.out.println("Random option chosen");
+                case "m", "M" -> controller.random();
                 case "w", "W" -> {
                     // Create new product
                     controller.createProduct();
