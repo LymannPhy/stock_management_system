@@ -14,7 +14,7 @@ public class ProductView {
     Scanner scanner = new Scanner(System.in);
     static int currentPage = 1;
     static int pageSize = 1;
-    static int rowPerPage = 5;
+    static int rowPerPage = 4;
 
     Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
 
@@ -88,10 +88,10 @@ public class ProductView {
         System.out.println("# Set row to display in table");
         System.out.print("> Enter row: ");
         int rowInput = scanner.nextInt();
-        System.out.print("> Are you sure to set row display? [1/0]: ");
-        //scanner.next();
-        int save = scanner.nextInt();
-        if(save == 1){
+        scanner.nextLine();
+        System.out.print("> Are you sure to set row display? [y/n]: ");
+        String save = scanner.nextLine();
+        if(save.equalsIgnoreCase("y")){
             rowPerPage = rowInput;
             System.out.println("# Set row successfully...!");
         }

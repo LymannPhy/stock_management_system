@@ -141,9 +141,9 @@ public class ProductController {
 
     // Method to read data from the file and parse it into Product objects
     public void readDataFromFile(String filename) {
-        // Clear the products list and used product codes set before reading new data
         products.clear();
         usedProductCodes.clear();
+        long startTime = System.nanoTime();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -157,6 +157,9 @@ public class ProductController {
         } catch (IOException e) {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
+        long endTime = System.nanoTime();
+        long resultTime = endTime - startTime;
+        System.out.println("Read " + " products spend : " + ( resultTime / 1_000_000_000.0) + " seconds.");
     }
 
     public List<Product> getProducts() {
