@@ -12,9 +12,9 @@ import java.util.Scanner;
 
 public class ProductView {
     Scanner scanner = new Scanner(System.in);
-    static int currentPage = 1;
-    static int pageSize = 1;
-    static int rowPerPage = 4;
+    static Integer currentPage = 1;
+    static Integer pageSize = 1;
+    static Integer rowPerPage = 4;
 
     Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
 
@@ -33,7 +33,7 @@ public class ProductView {
                 }
                 case "g" -> {
                     System.out.print("Enter numberPage to navigate = ");
-                    int pageInput = scanner.nextInt();
+                    Integer pageInput = scanner.nextInt();
                     currentPage = pageInput;
                 }
                 case "n" -> {

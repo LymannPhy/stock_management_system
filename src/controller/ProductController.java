@@ -5,6 +5,7 @@ import model.Product;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.io.IOException;
 
 import static model.Product.parseProductLine;
 
@@ -37,6 +38,7 @@ public class ProductController {
         }
     }
 
+    // choice 1
     public static void randomWrite() {
         System.out.print("> Enter random amount = ");
         int amount = scanner.nextInt();
@@ -46,16 +48,25 @@ public class ProductController {
         if (Objects.equals(save, "y")) {
             long startTime = System.nanoTime();
 
+            LocalDate importedAt = LocalDate.now();
+            String imported_at = importedAt.toString();
+
             List<String> serializedProducts = new ArrayList<>();
             for (int i = 0; i < amount; i++) {
-                Product newProduct = new Product("CSTAD-" + (i + 1), "Product" + (i + 1), 100.00d, 10, LocalDate.now().toString());
+                Product newProduct = new Product(); // Assuming a constructor exists
+                newProduct.setCode("C-"+(i+1));
+                newProduct.setName("Hello");
+                newProduct.setPrice(100.00d);
+                newProduct.setQty(10);
+                newProduct.setImported_at(imported_at);
                 products.add(newProduct);
                 serializedProducts.add(serializeProduct(newProduct));
             }
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat"))) {
+            try (ObjectOutputStream writer = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("data/transaction.dat")))) {
                 for (String serializedProduct : serializedProducts) {
-                    writer.write(serializedProduct + "\n");
+                    writer.write((serializedProduct + "\n").getBytes());
+                    //writer.flush();
                 }
             } catch (IOException e) {
                 System.err.println("Error writing to transaction file: " + e.getMessage());
@@ -68,20 +79,36 @@ public class ProductController {
         }
     }
 
-    public static void randomReadData() {
-        long startTime = System.nanoTime();
-        try (ObjectInputStream reader = new ObjectInputStream(new BufferedInputStream(new FileInputStream("data/transaction.dat")))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+
+    // choice 2
+    /*public static void randomWrite() {
+        System.out.print("> Enter random amount = ");
+        int amount = scanner.nextInt();
+        System.out.print("> Are you sure to random " + amount + " products? [y/n]: ");
+        scanner.nextLine();
+        String save = scanner.nextLine();
+        if (Objects.equals(save, "y")) {
+            long startTime = System.nanoTime();
+
+            List<String> serializedProducts = new ArrayList<>();
+            for (int i = 0; i < amount; i++) {
+                Product newProduct = new Product("CSTAD" + (i + 1), "Product" + (i + 1), 100.00d, 10, LocalDate.now().toString());
+                products.add(newProduct);
+                serializedProducts.add(serializeProduct(newProduct));
             }
-        } catch (IOException e) {
-            System.err.println("Error reading the transaction file: " + e.getMessage());
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat"))) {
+                for (String serializedProduct : serializedProducts) {
+                    writer.write(serializedProduct + "\n");
+                }
+            } catch (IOException e) {
+                System.err.println("Error writing to transaction file: " + e.getMessage());
+            }
+            System.out.println(amount + " Product(s) created successfully.");
+            long endTime = System.nanoTime();
+            long resultTime = endTime - startTime;
+            System.out.println("Write " + amount + " products spend : " + (resultTime / 1_000_000_000.0) + " seconds.");
         }
-        long endTime = System.nanoTime();
-        long resultTime = endTime - startTime;
-        System.out.println("Read " + " products spend : " + ( resultTime / 1_000_000_000.0) + " seconds.");
-    }
+    }*/
 
 
     // Load next product number from file or database
@@ -128,6 +155,16 @@ public class ProductController {
             System.out.println("Product created successfully.");
         } catch (IOException e) {
             System.err.println("Error writing to transaction file: " + e.getMessage());
+        }
+    }
+
+    public static void clearFile(){
+        try (FileWriter writer = new FileWriter("data/transaction.dat", false)) {
+            // Writing an empty string to overwrite and clear the file's content
+            writer.write("");
+            System.out.println("Clear data success...!");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -179,5 +216,4 @@ public class ProductController {
     private static String serializeProduct(Product product) {
         return String.format("%s,%s,%.2f,%d,%s", product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
     }
-
 }

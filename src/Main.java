@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+
 public class Main {
     public static void main(String[] args) {
         // Instantiate Scanner for user input
@@ -27,13 +28,11 @@ public class Main {
                 case "l" -> {
                     // Read data from transaction source file
                     controller.readDataFromFile("data/transaction.dat");
-                    // Get the products from the controller
-                    //products = controller.getProducts();
-                    // Instantiate the view and display the products
                     ProductView view = new ProductView();
                     view.displayProducts(products);
                 }
-                case "m", "M" -> controller.random();
+                case "m" -> controller.random();
+                case "cl" -> controller.clearFile();
                 case "w", "W" -> {
                     // Create new product
                     controller.createProduct();
