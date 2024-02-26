@@ -41,4 +41,22 @@ public class ProductView {
             System.out.println("Product not found.");
         }
     }
+    public void searchProduct(List<Product> products,String productName) {
+        System.out.println("Product List as Table");
+        table.addCell("Code");
+        table.addCell("Name");
+        table.addCell("Price");
+        table.addCell("QTY");
+        table.addCell("Imported At");
+        for (Product product : products) {
+            if (product.getName().contains(productName)) {
+                table.addCell(product.getCode());
+                table.addCell(product.getName());
+                table.addCell(product.getPrice().toString());
+                table.addCell(product.getQty().toString());
+                table.addCell(product.getImported_at());
+            }
+        }
+        System.out.println(table.render());
+    }
 }

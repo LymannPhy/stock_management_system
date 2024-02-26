@@ -49,7 +49,12 @@ public class Main {
                 }
                 case "e", "E" -> System.out.println("Edit option chosen");
                 case "d", "D" -> System.out.println("Delete option chosen");
-                case "s", "S" -> System.out.println("Search option chosen");
+                case "s", "S" -> {
+                    System.out.print("Enter Product's By Name to search :");
+                    String productName = String.valueOf(new Scanner(System.in).next());
+                    ProductView view = new ProductView();
+                    view.searchProduct(products,productName);
+                }
                 case "o", "O" -> System.out.println("Set Row option chosen");
                 case "c", "C" -> System.out.println("Commit option chosen");
                 case "b", "B" -> System.out.println("Backup option chosen");
