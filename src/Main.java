@@ -20,65 +20,59 @@ public class Main {
 
         // Display menu and handle user input
         while (true) {
-            try {
-                MenuView.displayMenu();
-                System.out.print("Enter your choice: ");
-                String choice = scanner.nextLine().trim();
+            MenuView.displayMenu();
+            System.out.print("Enter your choice: ");
+            String choice = scanner.nextLine().trim();
 
-                switch (choice.toLowerCase()) {
-                    case "l", "L" -> {
-                        // Read data from transaction source file
-                        controller.readDataFromFile("data/transaction.dat");
-                        // Get the products from the controller
-                        products = controller.getProducts();
-                        // Instantiate the view and display the products
-                        ProductView view = new ProductView();
-                        view.displayProducts(products);
-                    }
-                    case "m", "M" -> System.out.println("Random option chosen");
-                    case "w", "W" -> {
-                        // Create new product
-                        controller.createProduct();
-                    }
-                    case "r", "R" -> {
-                        System.out.print("Enter product code: ");
-                        String productCode = scanner.nextLine().trim();
-                        Product product = controller.getProductDetailByCode(productCode);
-                        ProductView view = new ProductView();
-                        view.displayProductDetails(product);
-                        break;
-                    }
-                    case "e", "E" -> {
-                        System.out.print("Enter Product Code: ");
-                        String productCode = scanner.nextLine().trim();
-                        Product product = controller.getProductDetailByCode(productCode);
-                        ProductView view = new ProductView();
-                        view.displayProductDetails(product);
-                        if (product == null) {
-                            break;
-                        } else {
-                            controller.updateProduct(productCode);
-                        }
-                    }
-                    case "d", "D" -> System.out.println("Delete option chosen");
-                    case "s", "S" -> System.out.println("Search option chosen");
-                    case "o", "O" -> System.out.println("Set Row option chosen");
-                    case "c", "C" -> System.out.println("Commit option chosen");
-                    case "b", "B" -> System.out.println("Backup option chosen");
-                    case "k", "K" -> System.out.println("Back up option chosen");
-                    case "t", "T" -> System.out.println("Restore option chosen");
-                    case "h", "H" -> System.out.println("Help option chosen");
-                    case "x", "X" -> {
-                        System.out.println("Exit option chosen");
-                        return; // Exit the program
-                    }
-                    default -> System.out.println("Invalid choice. Please try again.");
+            switch (choice.toLowerCase()) {
+                case "l", "L" -> {
+                    // Read data from transaction source file
+                    controller.readDataFromFile("data/transaction.dat");
+                    // Get the products from the controller
+                    products = controller.getProducts();
+                    // Instantiate the view and display the products
+                    ProductView view = new ProductView();
+                    view.displayProducts(products);
                 }
-            }
-            catch(Exception e){
-                System.out.println(e.getMessage());
+                case "m", "M" -> System.out.println("Random option chosen");
+                case "w", "W" -> {
+                    // Create new product
+                    controller.createProduct();
+                }
+                case "r", "R" -> {
+                    System.out.print("Enter product code: ");
+                    String productCode = scanner.nextLine().trim();
+                    Product product = controller.getProductDetailByCode(productCode);
+                    ProductView view = new ProductView();
+                    view.displayProductDetails(product);
+                    break;
+                }
+                case "e", "E" -> {
+                    System.out.print("Enter Product Code: ");
+                    String productCode = scanner.nextLine().trim();
+                    Product product = controller.getProductDetailByCode(productCode);
+                    ProductView view = new ProductView();
+                    view.displayProductDetails(product);
+                    if (product == null) {
+                        break;
+                    } else {
+                        controller.updateProduct(productCode);
+                    }
+                }
+                case "d", "D" -> System.out.println("Delete option chosen");
+                case "s", "S" -> System.out.println("Search option chosen");
+                case "o", "O" -> System.out.println("Set Row option chosen");
+                case "c", "C" -> System.out.println("Commit option chosen");
+                case "b", "B" -> System.out.println("Backup option chosen");
+                case "k", "K" -> System.out.println("Back up option chosen");
+                case "t", "T" -> System.out.println("Restore option chosen");
+                case "h", "H" -> System.out.println("Help option chosen");
+                case "x", "X" -> {
+                    System.out.println("Exit option chosen");
+                    return; // Exit the program
+                }
+                default -> System.out.println("Invalid choice. Please try again.");
             }
         }
-
     }
 }

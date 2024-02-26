@@ -117,6 +117,18 @@ public class ProductController {
     }
     //Update Product By Code
     public void updateProduct(String code) {
+        String pDate="",pName="";
+        double pPrice=0.0;
+        int pQty=0;
+        for(Product product:products){
+            if (product.getCode().equalsIgnoreCase(code)){
+                pDate=product.getImported_at();
+                pName=product.getName();
+                pPrice= product.getPrice();
+                pQty= product.getQty();
+                break;
+            }
+        }
         Scanner sure = new Scanner(System.in);
         Scanner scanner = new Scanner(System.in);
         System.out.println("# What do you want to update?");
@@ -127,67 +139,82 @@ public class ProductController {
         System.out.println("5. Back to Menu");
         System.out.print("> Choose Option [1-5] :");
         String choose = scanner.nextLine();
-
         switch (choose) {
             case "1" -> {
-                System.out.print("> Product's Name :");
-                String productName = scanner.nextLine();
-                System.out.print("> Product's Price:");
-                double productPrice = Double.parseDouble(scanner.nextLine());
-                System.out.print("> Product's QTY :");
-                int productQty = Integer.parseInt(scanner.nextLine());
-                ProductView view = new ProductView();
-                String date="";
-                for(Product product:products){
-                    if (product.getCode().equalsIgnoreCase(code)){
-                        date=product.getImported_at();
-                    }
-                }
-                view.previewAllUpdate(code,productName,productPrice,productQty,date);
-                System.out.print("[!] Are you sure you want to Update?? [Y/N] :");
-                String want = sure.next();
-                if (want.equalsIgnoreCase("y")) {
-                    for (Product product : products) {
-                        if (product.getCode().equals(code)) {
-                            product.setName(productName);
-                            product.setPrice(productPrice);
-                            product.setQty(productQty);
-                            writeProductsToFile();
-                            System.out.println("Update Product Successfully!!");
-                            return;
+                try {
+                    System.out.print("> Product's Name :");
+                    String productName = scanner.nextLine();
+                    System.out.print("> Product's Price:");
+                    double productPrice = Double.parseDouble(scanner.nextLine());
+                    System.out.print("> Product's QTY :");
+                    int productQty = Integer.parseInt(scanner.nextLine());
+                    ProductView view = new ProductView();
+                    view.previewUpdate(code, productName, productPrice, productQty, pDate);
+                    System.out.print("[!] Are you sure you want to Update?? [Y/N] :");
+                    String want = sure.next();
+                    if (want.equalsIgnoreCase("y")) {
+                        for (Product product : products) {
+                            if (product.getCode().equals(code)) {
+                                product.setName(productName);
+                                product.setPrice(productPrice);
+                                product.setQty(productQty);
+                                writeProductsToFile();
+                                System.out.println("Update Product Successfully!!");
+                                return;
+                            }
                         }
+                    } else if (want.equalsIgnoreCase("n")) {
+                        System.out.println("# You didn't Update Anything");
                     }
-                } else if (want.equalsIgnoreCase("n")){
-                    System.out.println("# You didn't Update Anything");
+                } catch (Exception e){
+                    System.out.println(e.getMessage());
                 }
             }
-            case "2" -> updateAttribute(code, scanner, "NAME");
-            case "3" -> updateAttribute(code, scanner, "UNIT PRICE");
-            case "4" -> updateAttribute(code, scanner, "QTY");
+            case "2" -> {
+                updateAttribute(code, scanner, "NAME",pName,pPrice,pQty,pDate);
+            }
+            case "3" -> {
+                updateAttribute(code, scanner, "UNIT PRICE",pName,pPrice,pQty,pDate);
+            }
+            case "4" -> {
+                updateAttribute(code, scanner, "QTY",pName,pPrice,pQty,pDate);
+            }
             case "5" -> System.out.println("# Back to menu");
             default-> System.out.println("# Invalid Input Choose! Please try again....");
         }
     }
-    //Update single
-    private void updateAttribute(String code, Scanner scanner, String attributeName) {
+    //Update single attribute
+    private void updateAttribute(String code, Scanner scanner, String attributeName,String pName,double pPrice, int pQty,String pDate) {
+        ProductView view= new ProductView();
         Scanner sure = new Scanner(System.in);
-        System.out.print("> Product's " + attributeName + " :");
-        String attributeValue = scanner.nextLine();
-        System.out.print("[!] Are you sure you want to Update?? [Y/N] :");
-        String want = sure.next();
-        if (want.equalsIgnoreCase("y")) {
-            for (Product product : products) {
-                if (product.getCode().equals(code)) {
-                    switch (attributeName) {
-                        case "NAME" -> product.setName(attributeValue);
-                        case "UNIT PRICE" -> product.setPrice(Double.parseDouble(attributeValue));
-                        case "QTY" -> product.setQty(Integer.parseInt(attributeValue));
-                    }
-                    writeProductsToFile();
-                    System.out.println("Update Product's " + attributeName + " Successfully!!");
-                    return;
-                }
+        try {
+            System.out.print("> Product's " + attributeName + " :");
+            String attributeValue = scanner.nextLine();
+            switch (attributeName) {
+                case "NAME" -> view.previewUpdate(code, attributeValue, pPrice, pQty, pDate);
+                case "UNIT PRICE" -> view.previewUpdate(code, pName, Double.parseDouble((attributeValue)), pQty, pDate);
+                case "QTY" -> view.previewUpdate(code, pName, pPrice, Integer.parseInt(attributeValue), pDate);
             }
+            System.out.print("[!] Are you sure you want to Update?? [Y/N] :");
+            String want = sure.next();
+            if (want.equalsIgnoreCase("y")) {
+                for (Product product : products) {
+                    if (product.getCode().equals(code)) {
+                        switch (attributeName) {
+                            case "NAME" -> product.setName(attributeValue);
+                            case "UNIT PRICE" -> product.setPrice(Double.parseDouble(attributeValue));
+                            case "QTY" -> product.setQty(Integer.parseInt(attributeValue));
+                        }
+                        writeProductsToFile();
+                        System.out.println("Update Product's " + attributeName + " Successfully!!");
+                        return;
+                    }
+                }
+            }else if (want.equalsIgnoreCase("n")){
+                System.out.println("# You didn't Update anything");
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
     // Write the data to file
