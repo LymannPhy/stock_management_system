@@ -167,7 +167,7 @@ public class ProductController {
                         System.out.println("# You didn't Update Anything");
                     }
                 } catch (Exception e){
-                    System.out.println(e.getMessage());
+                    System.out.println("[!] Might be error, wrong input "+e.getMessage());
                 }
             }
             case "2" -> {
@@ -214,7 +214,7 @@ public class ProductController {
                 System.out.println("# You didn't Update anything");
             }
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            System.out.println("[!] Might be error, wrong input "+e.getMessage());
         }
     }
     // Write the data to file
