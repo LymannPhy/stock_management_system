@@ -110,10 +110,11 @@ public class ProductController {
                     String serializedProduct = serializeProduct(newProduct);
                     writer.write(serializedProduct);
                     writer.newLine();
-                    if ((i + 1) % (amount ) == 0 || i == amount - 1) {
+                    if ( (amount > 10000) && (i + 1) % (amount / 10) == 0 || i == amount - 1) {
                         int progress = ((i + 1) * 100) / amount;
                         System.out.print("\rLoading[" + progress + "%]");
                     }
+
                 }
                 System.out.println("\r"+amount + " Product(s) created successfully.");
                 long endTime = System.nanoTime(); // End time
