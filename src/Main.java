@@ -48,7 +48,7 @@ public class Main {
                         }
                     }
                 }
-                case "cl" -> ProductController.clearFile();
+                //case "cl" -> ProductController.clearFile();
                 case "w" -> {
                     // Create new product
                     controller.createProduct();
@@ -90,7 +90,7 @@ public class Main {
                     }
                     break;
                 }
-                case "o", "O" -> System.out.println("Set Row option chosen");
+                case "o", "O" -> view.setRow();
                 case "c", "C" -> {
                     // Commit changes
                     controller.commitChanges();

@@ -32,7 +32,7 @@ public class ProductController {
 
     public void start(){
         loading();
-        readToList("data/transaction.dat");
+        readToList("data/product.dat");
     }
 
     public void readToList(String filename) {
@@ -110,7 +110,7 @@ public class ProductController {
                     String serializedProduct = serializeProduct(newProduct);
                     writer.write(serializedProduct);
                     writer.newLine();
-                    if ((i + 1) % (amount / 10) == 0 || i == amount - 1) {
+                    if ((i + 1) % (amount ) == 0 || i == amount - 1) {
                         int progress = ((i + 1) * 100) / amount;
                         System.out.print("\rLoading[" + progress + "%]");
                     }
@@ -130,6 +130,7 @@ public class ProductController {
         usedProductCodes.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
+            long startTime = System.nanoTime();
             while ((line = reader.readLine()) != null) {
                 Product product = parseProductLine(line);
                 if (product != null) {
@@ -137,6 +138,9 @@ public class ProductController {
                     usedProductCodes.add(product.getCode());
                 }
             }
+            long endTime = System.nanoTime();
+            long resultTime = endTime - startTime;
+            System.out.println("Read products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
         } catch (IOException e) {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
@@ -253,7 +257,7 @@ public class ProductController {
 
     public void commitChanges() {
         try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
-             BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat", true))) {
+             BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat", false))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 writer.write(line);
@@ -299,6 +303,7 @@ public class ProductController {
                 if (!line.startsWith(code)) {
                     // If not, write the line to the temporary file
                     writer.write(line + System.lineSeparator());
+                    products.removeIf(p -> p.getCode().equalsIgnoreCase(code));
                 }
             }
         } catch (IOException e) {
@@ -437,7 +442,7 @@ public class ProductController {
     }
 
 
-    private static String serializeProduct(Product product) {
+    private String serializeProduct(Product product) {
         return String.format("%s,%s,%.2f,%d,%s", product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
     }
 }
