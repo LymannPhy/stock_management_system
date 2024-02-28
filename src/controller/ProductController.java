@@ -1,6 +1,7 @@
 package controller;
 
 import model.Product;
+import view.ProductView;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -198,6 +199,121 @@ public class ProductController {
             System.err.println("Error replacing transaction file: " + e.getMessage());
         }
     }
+    public void editProduct(String code) {
+        String pDate = "", pName = "";
+        double pPrice = 0.0;
+        int pQty = 0;
+        for (Product product : products) {
+            if (product.getCode().equalsIgnoreCase(code)) {
+                pDate = product.getImported_at();
+                pName = product.getName();
+                pPrice = product.getPrice();
+                pQty = product.getQty();
+                break;
+            }
+        }
+        Scanner sure = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("# What do you want to update?");
+        System.out.println("1. All");
+        System.out.println("2. NAME");
+        System.out.println("3. UNIT PRICE");
+        System.out.println("4. QTY");
+        System.out.println("5. Back to Menu");
+        System.out.print("> Choose Option [1-5] :");
+        String choose = scanner.nextLine();
+        switch (choose) {
+            case "1" -> {
+                try {
+                    // Update all attribute
+                    System.out.print("> Product's Name :");
+                    String productName = scanner.nextLine();
+                    System.out.print("> Product's Price:");
+                    double productPrice = Double.parseDouble(scanner.nextLine());
+                    System.out.print("> Product's QTY :");
+                    int productQty = Integer.parseInt(scanner.nextLine());
+                    ProductView view = new ProductView();
+                    view.previewUpdate(code, productName, productPrice, productQty, pDate);
+                    System.out.print("[!] Are you sure you want to Update?? [Y/N] :");
+                    String want = sure.next();
+                    if (want.equalsIgnoreCase("y")) {
+                        for (Product product : products) {
+                            if (product.getCode().equals(code)) {
+                                product.setName(productName);
+                                product.setPrice(productPrice);
+                                product.setQty(productQty);
+                                writeProductsToFile(); // Update all products to the file
+                                System.out.println("Update Product Successfully!!");
+                                return;
+                            }
+                        }
+                    } else if (want.equalsIgnoreCase("n")) {
+                        System.out.println("# You didn't Update Anything");
+                    }
+                } catch (Exception e) {
+                    System.out.println("[!] Might be error, wrong input " + e.getMessage());
+                }
+            }
+            case "2" -> {
+                updateAttribute(code, scanner, "NAME", pName, pPrice, pQty, pDate);
+            }
+            case "3" -> {
+                updateAttribute(code, scanner, "UNIT PRICE", pName, pPrice, pQty, pDate);
+            }
+            case "4" -> {
+                updateAttribute(code, scanner, "QTY", pName, pPrice, pQty, pDate);
+            }
+            case "5" -> System.out.println("# Back to menu");
+            default -> System.out.println("# Invalid Input Choose! Please try again....");
+        }
+    }
+
+    private void updateAttribute(String code, Scanner scanner, String attributeName, String pName, double pPrice, int pQty, String pDate) {
+        ProductView view = new ProductView();
+        Scanner sure = new Scanner(System.in);
+        try {
+            System.out.print("> Product's " + attributeName + " :");
+            String attributeValue = scanner.nextLine();
+            switch (attributeName) {
+                case "NAME" -> view.previewUpdate(code, attributeValue, pPrice, pQty, pDate);
+                case "UNIT PRICE" -> view.previewUpdate(code, pName, Double.parseDouble((attributeValue)), pQty, pDate);
+                case "QTY" -> view.previewUpdate(code, pName, pPrice, Integer.parseInt(attributeValue), pDate);
+            }
+            System.out.print("[!] Are you sure you want to Update?? [Y/N] :");
+            String want = sure.next();
+            if (want.equalsIgnoreCase("y")) {
+                for (Product product : products) {
+                    if (product.getCode().equals(code)) {
+                        switch (attributeName) {
+                            case "NAME" -> product.setName(attributeValue);
+                            case "UNIT PRICE" -> product.setPrice(Double.parseDouble(attributeValue));
+                            case "QTY" -> product.setQty(Integer.parseInt(attributeValue));
+                        }
+                        writeProductsToFile(); // Update all products to the file
+                        System.out.println("Update Product's " + attributeName + " Successfully!!");
+                        return;
+                    }
+                }
+            } else if (want.equalsIgnoreCase("n")) {
+                System.out.println("# You didn't Update anything");
+            }
+        } catch (Exception e) {
+            System.out.println("[!] Might be error, wrong input " + e.getMessage());
+        }
+    }
+
+    // Write all products to the file after update
+    private void writeProductsToFile() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat"))) {
+            for (Product product : products) {
+                String serializedProduct = serializeProduct(product);
+                writer.write(serializedProduct + "\n");
+            }
+        } catch (IOException e) {
+            System.err.println("Error writing to transaction file: " + e.getMessage());
+        }
+    }
+
 
     private String serializeProduct(Product product) {
         return String.format("%s,%s,%.2f,%d,%s", product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());

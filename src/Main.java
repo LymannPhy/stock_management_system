@@ -46,7 +46,19 @@ public class Main {
                     ProductView view = new ProductView();
                     view.displayProductDetails(product);
                 }
-                case "e", "E" -> System.out.println("Edit option chosen");
+                case "e", "E" -> {
+                    System.out.print("Enter Product Code: ");
+                    String productCode = scanner.nextLine().trim();
+                    Product product = controller.getProductDetailByCode(productCode);
+                    ProductView view = new ProductView();
+                    view.displayProductDetails(product);
+                    if (product == null) {
+                        break;
+                    } else {
+                        controller.editProduct(productCode);
+                    }
+
+                }
                 case "d", "D" -> {
                     System.out.print("Enter product code to delete: ");
                     String productCode = scanner.nextLine().trim();

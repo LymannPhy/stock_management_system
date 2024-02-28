@@ -41,4 +41,15 @@ public class ProductView {
             System.out.println("Product not found.");
         }
     }
+    public void previewUpdate(String code,String name,double price,int qty,String date) {
+        Table table = new Table(1, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE, ShownBorders.SURROUND);
+        System.out.println("Product's All Details Preview After Update:");
+        table.addCell("ID" + " ".repeat(20) + ": " + code);
+        table.addCell("Name" + " ".repeat(18) + ": " + name);
+        table.addCell("Unit Price" + " ".repeat(12) + ": " + price);
+        table.addCell("Qty" + " ".repeat(19) + ": " + qty);
+        table.addCell("Imported Date" + " ".repeat(9) + ": " + date);
+        System.out.println(table.render());
+    }
+
 }
