@@ -27,7 +27,7 @@ public class Main {
             switch (choice.toLowerCase()) {
                 case "l", "L" -> {
                     // Read data from transaction source file
-                    controller.readDataFromFile("data/transaction.dat");
+                    controller.readTransactionDataFromFile();
                     // Get the products from the controller
                     products = controller.getProducts();
                     // Instantiate the view and display the products
@@ -45,21 +45,52 @@ public class Main {
                     Product product = controller.getProductDetailByCode(productCode);
                     ProductView view = new ProductView();
                     view.displayProductDetails(product);
-                    break;
                 }
                 case "e", "E" -> System.out.println("Edit option chosen");
-                case "d", "D" -> System.out.println("Delete option chosen");
-                case "s", "S" -> System.out.println("Search option chosen");
+                case "d", "D" -> {
+                    System.out.print("Enter product code to delete: ");
+                    String productCode = scanner.nextLine().trim();
+                    controller.deleteProductByCode(productCode);
+                }
+                case "s", "S" -> {
+                    System.out.print("Enter product name to search: ");
+                    String searchTerm = scanner.nextLine().trim();
+                    List<Product> searchResults = controller.searchProductByName(searchTerm);
+                    if (searchResults.isEmpty()) {
+                        System.out.println("No matching products found.");
+                    } else {
+                        ProductView view = new ProductView();
+                        view.displayProducts(searchResults);
+                    }
+                    break;
+                }
                 case "o", "O" -> System.out.println("Set Row option chosen");
-                case "c", "C" -> System.out.println("Commit option chosen");
+                case "c", "C" -> {
+                    // Commit changes
+                    controller.commitChanges();
+                }
                 case "b", "B" -> System.out.println("Backup option chosen");
                 case "k", "K" -> System.out.println("Back up option chosen");
                 case "t", "T" -> System.out.println("Restore option chosen");
-                case "h", "H" -> System.out.println("Help option chosen");
-                case "x", "X" -> {
-                    System.out.println("Exit option chosen");
-                    return; // Exit the program
+                case "h", "H" -> {
+                    MenuView help = new MenuView();
+                    help.displayHelp();
                 }
+                case "x", "X" -> {
+                    if (controller.hasUncommittedTransactions()) {
+                        System.out.println("You have uncommitted transactions.");
+                        System.out.print("Do you want to save or lose data?[Y/n]: ");
+                        String decision = scanner.nextLine().trim().toLowerCase();
+                        if (decision.equals("y")) {
+                            controller.commitChanges();
+                        } else {
+                            System.out.println("Exiting the program without saving data.");
+                        }
+                    }
+                    System.out.println("Exiting the program.");
+                    return;
+                }
+
                 default -> System.out.println("Invalid choice. Please try again.");
             }
         }
