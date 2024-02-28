@@ -4,6 +4,10 @@ import model.Product;
 import view.ProductView;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
@@ -30,8 +34,48 @@ public class ProductController {
         this.nextProductNumber = loadNextProductNumber(); // Load from file or database
     }
 
+    public void backUp(){
+        String orgPath  = "data/product.dat";
+        String copyPath = "data/backup.dat";
+        try (FileInputStream in = new FileInputStream(orgPath);
+             FileOutputStream out = new FileOutputStream(copyPath)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+            System.out.println("Backup successfully!");
+        } catch (IOException e) {e.printStackTrace();}
+    }
+
+    public void restore(){
+        deleteFile();
+        String orgPath = "data/backup.dat";
+        String copyPath  = "data/product.dat";
+        try (FileInputStream in = new FileInputStream(orgPath);
+             FileOutputStream out = new FileOutputStream(copyPath)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+            System.out.println("Restore successfully!");
+        } catch (IOException e) {e.printStackTrace();}
+    }
+
+    public static void deleteFile(){
+        Path path = Paths.get("data/product.dat");
+        try {
+            Files.delete(path);
+            //System.out.println("File deleted successfully.");
+        } catch (IOException e) {
+            System.out.println("Failed to delete the file.");
+            e.printStackTrace();
+        }
+    }
+
     public void start(){
-        loading();
+        //loading();
         readToList("data/product.dat");
     }
 
@@ -72,27 +116,6 @@ public class ProductController {
                 " ".repeat(Math.max(0, totalBlocks - blocksToShow));
         return green + progressBar;
     }
-
-    /*public void random(){
-        while (true){
-            System.out.println("1. Write");
-            System.out.println("2. Read");
-            System.out.println("3. Back");
-            System.out.print("Choose : ");
-            int op = scanner.nextInt();
-            switch (op){
-                case 1 -> randomWrite();
-                case 2 -> {
-                    randomRead("data/transaction.dat");
-                    ProductView view = new ProductView();
-                    view.randomDisplay(products);
-                }
-                case 3 -> {
-                    return;
-                }
-            }
-        }
-    }*/
 
     // choice 1
     public void randomWrite() {

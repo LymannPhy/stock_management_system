@@ -28,6 +28,11 @@ public class Main {
                     //controller.readDataFromFile("data/transaction.dat");
                     view.displayProducts(products);
                 }
+                case "k" -> controller.backUp();
+                case "t" -> {
+                    controller.restore();
+                    controller.start();
+                }
                 case "m" -> {
                     while (true){
                         System.out.println("1. Write");
@@ -53,7 +58,7 @@ public class Main {
                     // Create new product
                     controller.createProduct();
                 }
-                case "r", "R" -> {
+                case "r" -> {
                     System.out.print("Enter product code: ");
                     String productCode = scanner.nextLine().trim();
                     Product product = controller.getProductDetailByCode(productCode);
@@ -95,9 +100,7 @@ public class Main {
                     // Commit changes
                     controller.commitChanges();
                 }
-                case "b", "B" -> System.out.println("Backup option chosen");
-                case "k", "K" -> System.out.println("Back up option chosen");
-                case "t", "T" -> System.out.println("Restore option chosen");
+                //case "b", "B" -> controller.backUp();
                 case "h", "H" -> {
                     MenuView help = new MenuView();
                     help.displayHelp();
