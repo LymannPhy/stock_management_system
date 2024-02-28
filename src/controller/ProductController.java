@@ -26,6 +26,7 @@ public class ProductController implements Color {
     static Scanner scanner = new Scanner(System.in);
     private int nextProductNumber;
     private static volatile boolean isLoading = true;
+    static int amountProduct;
 
     public ProductController(List<Product> products) {
         this.products = products;
@@ -80,15 +81,16 @@ public class ProductController implements Color {
     public void randomWrite() {
         System.out.print("> Enter random amount = ");
         int amount = scanner.nextInt();
-        String sDigit = String.valueOf(amount);
+        amountProduct = amount;
         System.out.print("> Are you sure to random " + amount + " products? [y/n]: ");
         scanner.nextLine();
         String save = scanner.nextLine();
         if (Objects.equals(save, "y")) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat"))) {
                 long startTime = System.nanoTime(); // Start time
-                for (int i =  0; i < amount; i++) {
-                    Product newProduct = new Product("CSTAD-" + (i +   1), "P" + (i +   1),   10.00d,   10, LocalDate.now().toString());
+                int i = 0;
+                while (i < amount) {
+                    Product newProduct = new Product("CSTAD-" + (i +   1), "P" + (i +  1), 10.00d, 10, LocalDate.now().toString());
                     String serializedProduct = serializeProduct(newProduct);
                     writer.write(serializedProduct);
                     writer.newLine();
@@ -96,9 +98,9 @@ public class ProductController implements Color {
                         int progress = ((i + 1) * 100) / amount;
                         System.out.print("\rLoading[" + progress + "%]");
                     }
-
+                    i++;
                 }
-                System.out.println("\r"+amount + " Product(s) created successfully.");
+                System.out.println("\r"+amount + " Products created successfully.");
                 long endTime = System.nanoTime(); // End time
                 long resultTime = endTime - startTime;
                 System.out.println("Writing " + amount + " products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
@@ -114,16 +116,22 @@ public class ProductController implements Color {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             long startTime = System.nanoTime();
+            int i=0;
             while ((line = reader.readLine()) != null) {
                 Product product = parseProductLine(line);
                 if (product != null) {
                     products.add(product);
                     usedProductCodes.add(product.getCode());
                 }
+                i+=1;
+                if ( (amountProduct > 10000) && (i + 1) % (amountProduct / 10) == 0 || i == amountProduct - 1) {
+                    int progress = ((i + 1) * 100) / amountProduct;
+                    System.out.print("\rLoading[" + progress + "%]");
+                }
             }
             long endTime = System.nanoTime();
             long resultTime = endTime - startTime;
-            System.out.println("Read products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
+            System.out.println("\rRead products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
         } catch (IOException e) {
             System.err.println("Error reading data from file: " + e.getMessage());
         }

@@ -44,7 +44,7 @@ public class Main {
                             case 1 -> controller.randomWrite();
                             case 2 -> {
                                 controller.randomRead("data/transaction.dat");
-                                view.randomDisplay(products);
+                                view.displayProducts(products);
                             }
                             case 3 -> {
                                 System.out.println("Back to menu");
