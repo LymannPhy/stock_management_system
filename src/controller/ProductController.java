@@ -163,6 +163,7 @@ public class ProductController {
         return searchResults;
     }
 
+
     // Method to delete product by code from transaction file
     public void deleteProductByCode(String code) {
         File transactionFile = new File("data/transaction.dat");
