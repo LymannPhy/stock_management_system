@@ -20,7 +20,7 @@ public class ProductView {
 
     public void displayProducts(List<Product> products) {
         while (true) {
-            pagination(products);
+            display(products);
             System.out.print("(B).Back or to Navigate page: ");
             String page = scanner.nextLine();
             if(Objects.equals(page, "b")) return;
@@ -50,7 +50,7 @@ public class ProductView {
     }
 
     // pagination for display products
-    public static void pagination(List<Product> product) {
+    public static void display(List<Product> product) {
         System.out.println("Products List as Table");
         Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
         table.setColumnWidth(0,15,20);
