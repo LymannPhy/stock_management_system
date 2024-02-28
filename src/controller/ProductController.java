@@ -13,9 +13,12 @@ import java.util.Scanner;
 import static model.Product.parseProductLine;
 
 public class ProductController {
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
+    private String backupDirectory = "backup/";
     private HashSet<String> usedProductCodes;
+    private ProductView view = new ProductView();
     private int nextProductNumber;
+    Scanner input = new Scanner(System.in);
 
     public ProductController(List<Product> products) {
         this.products = products != null ? products : new ArrayList<>();
@@ -318,4 +321,90 @@ public class ProductController {
     private String serializeProduct(Product product) {
         return String.format("%s,%s,%.2f,%d,%s", product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
     }
+
+    // Method to restore product data from a backup file
+    public void restoreData() {
+        File backupFolder = new File("backup");
+        File[] backupFiles = backupFolder.listFiles((dir, name) -> name.endsWith(".bak"));
+        if (backupFiles == null || backupFiles.length == 0) {
+            System.out.println("No backup files found in the backup_product folder.");
+            return;
+        }
+
+        System.out.println("Available backup files:");
+        for (int i = 0; i < backupFiles.length; i++) {
+            System.out.println((i + 1) + ". " + backupFiles[i].getName());
+        }
+
+        System.out.print("Enter the number of the backup file to restore: ");
+        Scanner scanner = new Scanner(System.in);
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline character
+        if (choice < 1 || choice > backupFiles.length) {
+            System.out.println("Invalid choice.");
+            return;
+        }
+
+        String filePath = backupFiles[choice - 1].getPath();
+        List<Product> restoredProducts = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 5) { // Assuming the format is consistent
+                    Product product = new Product();
+                    product.setCode(parts[0]);
+                    product.setName(parts[1]);
+                    product.setPrice(Double.parseDouble(parts[2]));
+                    product.setQty(Integer.parseInt(parts[3]));
+                    product.setImported_at(parts[4]);
+                    restoredProducts.add(product);
+                } else {
+                    System.out.println("Invalid data format in the file.");
+                }
+            }
+            // Replace the existing product data with the restored data
+            products.clear();
+            products.addAll(restoredProducts);
+            System.out.println("Product data restored successfully from " + filePath);
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: File not found at path " + filePath);
+        } catch (IOException e) {
+            System.out.println("Error reading product data: " + e.getMessage());
+        }
+    }
+
+
+
+
+    // Method to backup product data to a file
+    public void backupData() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("backup/backup_product.bak"))) {
+            for (Product product : products) {
+                String line = String.format("%s,%s,%.2f,%d,%s%n",
+                        product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
+                writer.write(line);
+            }
+            System.out.println("Product data backed up successfully.");
+        } catch (IOException e) {
+            System.out.println("Error backing up product data: " + e.getMessage());
+        }
+    }
+    public boolean backupDataTransactions() {
+        File file = new File("backup/backup_product.bak");
+        return file.exists() && file.length() > 0;
+    }
+    public void handleBackupDecision() {
+        if (backupDataTransactions()) {
+            System.out.println("You have uncommitted transactions.");
+            System.out.print("Do you want to save or lose data?[Y/n]: ");
+            String decision = input.nextLine().trim().toLowerCase();
+            if (decision.equals("y")) {
+                backupData();
+            } else {
+                System.out.println("Exiting the program without saving data.");
+            }
+        }
+    }
+
 }

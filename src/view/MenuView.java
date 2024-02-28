@@ -11,7 +11,7 @@ public class MenuView {
         System.out.println("""
        ╔═════════════════════════════════════════════════════════════════════════════════════════════╗
        ║ Disp(l)ay  |  Rando(m)   |   W)rite    |   R)ead     |   (E)dit   |   (D)elete  | (S)earch  ║
-       ║ Set R(o)ws |  (C)ommit   |   Res(t)ore |   Bac(k) up |   (H)elp   |   E(x)it                ║                                               ║
+       ║ Set R(o)ws |  (C)ommit   |   Res(t)ore |   Bac(k) up |   (H)elp   |   E(x)it                ║
        ╚═════════════════════════════════════════════════════════════════════════════════════════════╝
         """);
     }

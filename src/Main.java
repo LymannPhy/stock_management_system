@@ -17,7 +17,7 @@ public class Main {
 
         // Pass the list of products to the ProductController constructor
         ProductController controller = new ProductController(products);
-
+        boolean dataRestored = false;
         // Display menu and handle user input
         while (true) {
             MenuView.displayMenu();
@@ -26,13 +26,12 @@ public class Main {
 
             switch (choice.toLowerCase()) {
                 case "l", "L" -> {
-                    // Read data from transaction source file
-                    controller.readTransactionDataFromFile();
-                    // Get the products from the controller
-                    products = controller.getProducts();
-                    // Instantiate the view and display the products
-                    ProductView view = new ProductView();
-                    view.displayProducts(products);
+                    if (!dataRestored) { // Only read from transaction file if data is not restored
+                        controller.readTransactionDataFromFile();
+                        products = controller.getProducts();
+                    }
+                    ProductView listView = new ProductView();
+                    listView.displayProducts(products);
                 }
                 case "m", "M" -> System.out.println("Random option chosen");
                 case "w", "W" -> {
@@ -82,8 +81,15 @@ public class Main {
                     controller.commitChanges();
                 }
                 case "b", "B" -> System.out.println("Backup option chosen");
-                case "k", "K" -> System.out.println("Back up option chosen");
-                case "t", "T" -> System.out.println("Restore option chosen");
+                case "k", "K" -> {
+                    System.out.println("Back up option chosen");
+                    controller.handleBackupDecision();
+                }
+                case "t", "T" -> {
+                    System.out.println("Restore option chosen");
+                    controller.restoreData();
+                    dataRestored = true;
+                }
                 case "h", "H" -> {
                     MenuView help = new MenuView();
                     help.displayHelp();
@@ -102,7 +108,6 @@ public class Main {
                     System.out.println("Exiting the program.");
                     return;
                 }
-
                 default -> System.out.println("Invalid choice. Please try again.");
             }
         }
