@@ -4,25 +4,146 @@ import model.Product;
 import view.ProductView;
 
 import java.io.*;
+import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.io.IOException;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static model.Product.parseProductLine;
 
 public class ProductController {
-    private List<Product> products;
+    private static List<Product> products;
     private HashSet<String> usedProductCodes;
+    static Scanner scanner = new Scanner(System.in);
     private int nextProductNumber;
+    private static volatile boolean isLoading = true;
+    static String green = "\u001B[32m";
+    String reset = "\u001B[0m";
 
     public ProductController(List<Product> products) {
-        this.products = products != null ? products : new ArrayList<>();
+        this.products = products;
         this.usedProductCodes = new HashSet<>();
-        this.nextProductNumber = loadNextProductNumber();
+        this.nextProductNumber = loadNextProductNumber(); // Load from file or database
     }
 
+    public void start(){
+        loading();
+        readToList("data/transaction.dat");
+    }
+
+    public void readToList(String filename) {
+        products.clear();
+        usedProductCodes.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Product product = parseProductLine(line);
+                if (product != null) {
+                    products.add(product);
+                    usedProductCodes.add(product.getCode());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading data from file: " + e.getMessage());
+        }
+    }
+
+    public void loading(){
+        for (int i = 0; i <= 100; i+=2) {
+            int totalBlocks = 50;
+            int blocksToShow = (i * totalBlocks) / 100;
+            System.out.print(" ".repeat(20) + " Loading [ " + i + "% ]");
+            System.out.print(" ".repeat(10) + getProgressBar(blocksToShow, totalBlocks) + "\r");
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        System.out.println(" "+reset);
+    }
+
+    private static String getProgressBar(int blocksToShow, int totalBlocks) {
+        String progressBar = "█".repeat(Math.max(0, blocksToShow)) +
+                " ".repeat(Math.max(0, totalBlocks - blocksToShow));
+        return green + progressBar;
+    }
+
+    /*public void random(){
+        while (true){
+            System.out.println("1. Write");
+            System.out.println("2. Read");
+            System.out.println("3. Back");
+            System.out.print("Choose : ");
+            int op = scanner.nextInt();
+            switch (op){
+                case 1 -> randomWrite();
+                case 2 -> {
+                    randomRead("data/transaction.dat");
+                    ProductView view = new ProductView();
+                    view.randomDisplay(products);
+                }
+                case 3 -> {
+                    return;
+                }
+            }
+        }
+    }*/
+
+    // choice 1
+    public void randomWrite() {
+        System.out.print("> Enter random amount = ");
+        int amount = scanner.nextInt();
+        String sDigit = String.valueOf(amount);
+        System.out.print("> Are you sure to random " + amount + " products? [y/n]: ");
+        scanner.nextLine();
+        String save = scanner.nextLine();
+        if (Objects.equals(save, "y")) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat"))) {
+                long startTime = System.nanoTime(); // Start time
+                for (int i =  0; i < amount; i++) {
+                    Product newProduct = new Product("CSTAD-" + (i +   1), "P" + (i +   1),   10.00d,   10, LocalDate.now().toString());
+                    String serializedProduct = serializeProduct(newProduct);
+                    writer.write(serializedProduct);
+                    writer.newLine();
+                    if ((i + 1) % (amount / 10) == 0 || i == amount - 1) {
+                        int progress = ((i + 1) * 100) / amount;
+                        System.out.print("\rLoading[" + progress + "%]");
+                    }
+                }
+                System.out.println("\r"+amount + " Product(s) created successfully.");
+                long endTime = System.nanoTime(); // End time
+                long resultTime = endTime - startTime;
+                System.out.println("Writing " + amount + " products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
+            } catch (IOException e) {
+                System.err.println("Error writing to transaction file: " + e.getMessage());
+            }
+        }
+    }
+
+    public void randomRead(String filename){
+        products.clear();
+        usedProductCodes.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Product product = parseProductLine(line);
+                if (product != null) {
+                    products.add(product);
+                    usedProductCodes.add(product.getCode());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading data from file: " + e.getMessage());
+        }
+    }
+
+
+    // Load next product number from file or database
     private int loadNextProductNumber() {
         try (BufferedReader reader = new BufferedReader(new FileReader("data/product_number.txt"))) {
             String line = reader.readLine();
@@ -316,7 +437,7 @@ public class ProductController {
     }
 
 
-    private String serializeProduct(Product product) {
+    private static String serializeProduct(Product product) {
         return String.format("%s,%s,%.2f,%d,%s", product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
     }
 }
