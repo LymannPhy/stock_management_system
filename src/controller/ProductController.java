@@ -1,6 +1,7 @@
 package controller;
 
 import model.Product;
+import view.Color;
 import view.ProductView;
 
 import java.io.*;
@@ -19,14 +20,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static model.Product.parseProductLine;
 
-public class ProductController {
+public class ProductController implements Color {
     private static List<Product> products;
     private HashSet<String> usedProductCodes;
     static Scanner scanner = new Scanner(System.in);
     private int nextProductNumber;
     private static volatile boolean isLoading = true;
-    static String green = "\u001B[32m";
-    String reset = "\u001B[0m";
 
     public ProductController(List<Product> products) {
         this.products = products;
@@ -34,48 +33,8 @@ public class ProductController {
         this.nextProductNumber = loadNextProductNumber(); // Load from file or database
     }
 
-    public void backUp(){
-        String orgPath  = "data/product.dat";
-        String copyPath = "data/backup.dat";
-        try (FileInputStream in = new FileInputStream(orgPath);
-             FileOutputStream out = new FileOutputStream(copyPath)) {
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = in.read(buffer)) > 0) {
-                out.write(buffer, 0, length);
-            }
-            System.out.println("Backup successfully!");
-        } catch (IOException e) {e.printStackTrace();}
-    }
-
-    public void restore(){
-        deleteFile();
-        String orgPath = "data/backup.dat";
-        String copyPath  = "data/product.dat";
-        try (FileInputStream in = new FileInputStream(orgPath);
-             FileOutputStream out = new FileOutputStream(copyPath)) {
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = in.read(buffer)) > 0) {
-                out.write(buffer, 0, length);
-            }
-            System.out.println("Restore successfully!");
-        } catch (IOException e) {e.printStackTrace();}
-    }
-
-    public static void deleteFile(){
-        Path path = Paths.get("data/product.dat");
-        try {
-            Files.delete(path);
-            //System.out.println("File deleted successfully.");
-        } catch (IOException e) {
-            System.out.println("Failed to delete the file.");
-            e.printStackTrace();
-        }
-    }
-
     public void start(){
-        //loading();
+        loading();
         readToList("data/product.dat");
     }
 
@@ -103,7 +62,7 @@ public class ProductController {
             System.out.print(" ".repeat(20) + " Loading [ " + i + "% ]");
             System.out.print(" ".repeat(10) + getProgressBar(blocksToShow, totalBlocks) + "\r");
             try {
-                Thread.sleep(50);
+                Thread.sleep(30);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

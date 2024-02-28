@@ -20,7 +20,7 @@ public class Main {
         aa:
         while (true) {
             MenuView.displayMenu();
-            System.out.print("Enter your choice: ");
+            System.out.print("➡\uFE0F Enter your choice: ");
             String choice = scanner.nextLine().trim();
             switch (choice.toLowerCase()) {
                 case "l" -> {
@@ -28,11 +28,11 @@ public class Main {
                     //controller.readDataFromFile("data/transaction.dat");
                     view.displayProducts(products);
                 }
-                case "k" -> controller.backUp();
-                case "t" -> {
+                //case "k" -> controller.backUp();
+                /*case "t" -> {
                     controller.restore();
                     controller.start();
-                }
+                }*/
                 case "m" -> {
                     while (true){
                         System.out.println("1. Write");

@@ -1,7 +1,37 @@
 package view;
 
-public class Comment {
-}
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+/*class FileReadWriteExample {
+    public static void main(String[] args) {
+        // Paths to source and target files
+        String sourceFilePath = "source.txt";
+        String targetFilePath = "target.txt";
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(sourceFilePath));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(targetFilePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                writer.write(line);
+                writer.newLine();
+            }
+            System.out.println("File copied successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}*/
+
 
 // method random
 // choice 2, write 1M = 0.93
@@ -126,5 +156,45 @@ public class Comment {
                     return;
                 }
             }
+        }
+    }*/
+
+/*public void backUp(){
+        String orgPath  = "data/product.dat";
+        String copyPath = "data/backup.dat";
+        try (FileInputStream in = new FileInputStream(orgPath);
+             FileOutputStream out = new FileOutputStream(copyPath)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+            System.out.println("Backup successfully!");
+        } catch (IOException e) {e.printStackTrace();}
+    }
+
+    public void restore(){
+        deleteFile();
+        String orgPath = "data/backup.dat";
+        String copyPath  = "data/product.dat";
+        try (FileInputStream in = new FileInputStream(orgPath);
+             FileOutputStream out = new FileOutputStream(copyPath)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+            System.out.println("Restore successfully!");
+        } catch (IOException e) {e.printStackTrace();}
+    }
+
+    public static void deleteFile(){
+        Path path = Paths.get("data/product.dat");
+        try {
+            Files.delete(path);
+            //System.out.println("File deleted successfully.");
+        } catch (IOException e) {
+            System.out.println("Failed to delete the file.");
+            e.printStackTrace();
         }
     }*/

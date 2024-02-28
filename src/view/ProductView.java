@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class ProductView {
+public class ProductView implements Color {
     Scanner scanner = new Scanner(System.in);
     static Integer currentPage = 1;
     static Integer pageSize = 1;
