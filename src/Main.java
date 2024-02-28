@@ -7,19 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class Main {
+    static ProductView view = new ProductView();
+    static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
-        // Instantiate Scanner for user input
-        Scanner scanner = new Scanner(System.in);
-
-        // Create an empty list to hold products
         List<Product> products = new ArrayList<>();
-
         // Pass the list of products to the ProductController constructor
         ProductController controller = new ProductController(products);
-
+        controller.start();
         // Display menu and handle user input
+        aa:
         while (true) {
             MenuView.displayMenu();
             System.out.print("Enter your choice: ");
@@ -27,13 +24,31 @@ public class Main {
             switch (choice.toLowerCase()) {
                 case "l" -> {
                     // Read data from transaction source file
-                    controller.readDataFromFile("data/transaction.dat");
-                    ProductView view = new ProductView();
+                    //controller.readDataFromFile("data/transaction.dat");
                     view.displayProducts(products);
                 }
-                case "m" -> controller.random();
-                case "cl" -> controller.clearFile();
-                case "w", "W" -> {
+                case "m" -> {
+                    while (true){
+                        System.out.println("1. Write");
+                        System.out.println("2. Read");
+                        System.out.println("3. Back");
+                        System.out.print("Choose : ");
+                        int op = scanner.nextInt();
+                        switch (op){
+                            case 1 -> controller.randomWrite();
+                            case 2 -> {
+                                controller.randomRead("data/transaction.dat");
+                                view.randomDisplay(products);
+                            }
+                            case 3 -> {
+                                System.out.println("Back to menu");
+                                continue aa;
+                            }
+                        }
+                    }
+                }
+                case "cl" -> ProductController.clearFile();
+                case "w" -> {
                     // Create new product
                     controller.createProduct();
                 }

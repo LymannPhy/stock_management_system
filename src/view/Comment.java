@@ -110,3 +110,21 @@ public class Comment {
                 " ".repeat(Math.max(0, totalBlocks - blocksToShow));
         return green + progressBar;
     }*/
+
+
+/*public void random(){
+        while (true){
+            System.out.println("1. Write");
+            System.out.println("2. Read");
+            System.out.println("3. Back");
+            System.out.print("Choose : ");
+            int op = scanner.nextInt();
+            switch (op){
+                case 1 -> randomWrite();
+                case 2 ->
+                case 3 -> {
+                    return;
+                }
+            }
+        }
+    }*/

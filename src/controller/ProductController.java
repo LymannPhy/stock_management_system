@@ -1,6 +1,7 @@
 package controller;
 
 import model.Product;
+import view.ProductView;
 
 import java.io.*;
 import java.time.Duration;
@@ -29,7 +30,50 @@ public class ProductController {
         this.nextProductNumber = loadNextProductNumber(); // Load from file or database
     }
 
-    public void random(){
+    public void start(){
+        loading();
+        readToList("data/transaction.dat");
+    }
+
+    public void readToList(String filename) {
+        products.clear();
+        usedProductCodes.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Product product = parseProductLine(line);
+                if (product != null) {
+                    products.add(product);
+                    usedProductCodes.add(product.getCode());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading data from file: " + e.getMessage());
+        }
+    }
+
+    public void loading(){
+        for (int i = 0; i <= 100; i+=2) {
+            int totalBlocks = 50;
+            int blocksToShow = (i * totalBlocks) / 100;
+            System.out.print(" ".repeat(20) + " Loading [ " + i + "% ]");
+            System.out.print(" ".repeat(10) + getProgressBar(blocksToShow, totalBlocks) + "\r");
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        System.out.println(" "+reset);
+    }
+
+    private static String getProgressBar(int blocksToShow, int totalBlocks) {
+        String progressBar = "█".repeat(Math.max(0, blocksToShow)) +
+                " ".repeat(Math.max(0, totalBlocks - blocksToShow));
+        return green + progressBar;
+    }
+
+    /*public void random(){
         while (true){
             System.out.println("1. Write");
             System.out.println("2. Read");
@@ -38,50 +82,63 @@ public class ProductController {
             int op = scanner.nextInt();
             switch (op){
                 case 1 -> randomWrite();
-                case 2 -> System.out.println("Coming soon...!");
+                case 2 -> {
+                    randomRead("data/transaction.dat");
+                    ProductView view = new ProductView();
+                    view.randomDisplay(products);
+                }
                 case 3 -> {
                     return;
                 }
             }
         }
-    }
+    }*/
 
     // choice 1
-    static AtomicInteger j = new AtomicInteger(0);
-    static AtomicInteger amount = new AtomicInteger(0);
-
-    // test 1M record = 1.39s
-    public static void randomWrite() {
+    public void randomWrite() {
         System.out.print("> Enter random amount = ");
-        int amount1 = scanner.nextInt();
-        String sDigit = String.valueOf(amount1);
-        int digit = sDigit.length();
-        amount.set(amount1);
+        int amount = scanner.nextInt();
+        String sDigit = String.valueOf(amount);
         System.out.print("> Are you sure to random " + amount + " products? [y/n]: ");
         scanner.nextLine();
         String save = scanner.nextLine();
         if (Objects.equals(save, "y")) {
-
-            long startTime = System.nanoTime(); // Start time
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat"))) {
-                for (int i =  0; i < amount1; i++) {
+                long startTime = System.nanoTime(); // Start time
+                for (int i =  0; i < amount; i++) {
                     Product newProduct = new Product("CSTAD-" + (i +   1), "P" + (i +   1),   10.00d,   10, LocalDate.now().toString());
                     String serializedProduct = serializeProduct(newProduct);
                     writer.write(serializedProduct);
                     writer.newLine();
-                    if ((i + 1) % (amount1 / 10) == 0 || i == amount1 - 1) {
-                        int progress = ((i + 1) * 100) / amount1;
-                        System.out.print("\rLoading [" + progress + "%] ");
+                    if ((i + 1) % (amount / 10) == 0 || i == amount - 1) {
+                        int progress = ((i + 1) * 100) / amount;
+                        System.out.print("\rLoading[" + progress + "%]");
                     }
                 }
+                System.out.println("\r"+amount + " Product(s) created successfully.");
+                long endTime = System.nanoTime(); // End time
+                long resultTime = endTime - startTime;
+                System.out.println("Writing " + amount + " products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
             } catch (IOException e) {
                 System.err.println("Error writing to transaction file: " + e.getMessage());
             }
+        }
+    }
 
-            System.out.println("\r"+amount + " Product(s) created successfully.");
-            long endTime = System.nanoTime(); // End time
-            long resultTime = endTime - startTime;
-            System.out.println("Writing " + amount + " products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
+    public void randomRead(String filename){
+        products.clear();
+        usedProductCodes.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Product product = parseProductLine(line);
+                if (product != null) {
+                    products.add(product);
+                    usedProductCodes.add(product.getCode());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading data from file: " + e.getMessage());
         }
     }
 
@@ -157,8 +214,6 @@ public class ProductController {
     public void readDataFromFile(String filename) {
         products.clear();
         usedProductCodes.clear();
-        long startTime = System.nanoTime();
-
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -171,9 +226,6 @@ public class ProductController {
         } catch (IOException e) {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
-        long endTime = System.nanoTime();
-        long resultTime = endTime - startTime;
-        System.out.println("Read " + " products spend : " + ( resultTime / 1_000_000_000.0) + " seconds.");
     }
 
     public List<Product> getProducts() {
