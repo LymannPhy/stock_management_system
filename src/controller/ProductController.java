@@ -5,20 +5,12 @@ import view.Color;
 import view.ProductView;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.io.IOException;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 import static model.Product.parseProductLine;
 
@@ -31,16 +23,39 @@ public class ProductController implements Color {
     private static volatile boolean isLoading = true;
     static int amountProduct;
     Scanner input = new Scanner(System.in);
-
+    private boolean changesCommitted;
     public ProductController(List<Product> products) {
         this.products = products;
         this.usedProductCodes = new HashSet<>();
-        this.nextProductNumber = loadNextProductNumber(); // Load from file or database
+        this.nextProductNumber = loadNextProductNumber();
+        this.changesCommitted = false;
+
+    }
+
+    public void logo(){
+        String logo = """
+                \t\t\t\t\t ╔════════════════════════════════════════════════════════╗
+                \t\t\t\t\t ║ \t\t ██████╗███████╗████████╗ █████╗ ██████╗          ║
+                \t\t\t\t\t ║ \t\t██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗         ║
+                \t\t\t\t\t ║ \t\t██║     ███████╗   ██║   ███████║██║  ██║         ║
+                \t\t\t\t\t ║ \t\t██║     ╚════██║   ██║   ██╔══██║██║  ██║         ║
+                \t\t\t\t\t ║ \t\t╚██████╗███████║   ██║   ██║  ██║██████╔╝         ║
+                \t\t\t\t\t ║ \t\t ╚═════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═════╝          ║
+                \t\t\t\t\t ║ \t\t\t Center of Science Technology and             ║
+                \t\t\t\t\t ║ \t\t\t\t Advanced Development                     ║
+                \t\t\t\t\t ║ \t\t☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆        ║
+                \t\t\t\t\t ║ \t\t\t\t\t Stock Manager                        ║
+                \t\t\t\t\t ║ \t\t☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆        ║
+                \t\t\t\t\t ╚════════════════════════════════════════════════════════╝
+                """;
+        System.out.println("\n"+ yellow +logo + reset);
     }
 
     public void start(){
-        loading();
-        readToList("data/product.dat");
+        //loading();
+        logo();
+        index();
+        //readToList("data/product.dat");
     }
 
     public void readToList(String filename) {
@@ -60,14 +75,46 @@ public class ProductController implements Color {
         }
     }
 
+    public void index(){
+        products.clear();
+        usedProductCodes.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
+            String line;
+            int i=0;
+            int count = 1;
+            System.out.print("Loading : "+green);
+            long startTime = System.nanoTime();
+            while ((line = reader.readLine()) != null) {
+                Product product = parseProductLine(line);
+                if (product != null) {
+                    products.add(product);
+                    usedProductCodes.add(product.getCode());
+                    if (count == 100) System.out.print("\r♨️ Data is Loading ...../|");
+                    if (count == 400) {
+                        System.out.print("\rData is Loading .....|\\\"");
+                        count=1;
+                    }
+                    count++;
+                    i++;
+                }
+            }
+            long endTime = System.nanoTime(); // End time
+            long resultTime = endTime - startTime;
+            System.out.println(reset+"\r♨️ Loading spend: " + (resultTime /  1_000_000_000.0) + " seconds.");
+        } catch (IOException e) {
+            System.err.println("Error reading data from file: " + e.getMessage());
+        }
+        System.out.println();
+    }
+
     public void loading(){
         for (int i = 0; i <= 100; i+=2) {
-            int totalBlocks = 50;
+            int totalBlocks = 30;
             int blocksToShow = (i * totalBlocks) / 100;
-            System.out.print(" ".repeat(20) + " Loading [ " + i + "% ]");
+            System.out.print(" ".repeat(10) + " Loading [ " + i + "% ]");
             System.out.print(" ".repeat(10) + getProgressBar(blocksToShow, totalBlocks) + "\r");
             try {
-                Thread.sleep(30);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -80,6 +127,7 @@ public class ProductController implements Color {
                 " ".repeat(Math.max(0, totalBlocks - blocksToShow));
         return green + progressBar;
     }
+
 
     // choice 1
     public void randomWrite() {
@@ -216,14 +264,6 @@ public class ProductController implements Color {
         return lastProductNumberFromRandomWrite;
     }
 
-    private void saveNextProductNumber() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product_number.txt"))) {
-            writer.write(String.valueOf(nextProductNumber));
-        } catch (IOException e) {
-            System.err.println("Error writing product number to file: " + e.getMessage());
-        }
-    }
-
     public void createProduct() {
         Scanner scanner = new Scanner(System.in);
 
@@ -268,24 +308,6 @@ public class ProductController implements Color {
         }
     }
 
-    public void readTransactionDataFromFile() {
-        products.clear();
-        usedProductCodes.clear();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Product product = parseProductLine(line);
-                if (product != null) {
-                    products.add(product);
-                    usedProductCodes.add(product.getCode());
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading transaction data from file: " + e.getMessage());
-        }
-    }
-
     public Product getProductDetailByCode(String code) {
         for (Product product : products) {
             if (product.getCode().equalsIgnoreCase(code)) {
@@ -295,16 +317,16 @@ public class ProductController implements Color {
         return null;
     }
 
-    public List<Product> getProducts() {
-        return products;
-    }
-
     public boolean hasUncommittedTransactions() {
         File file = new File("data/transaction.dat");
         return file.exists() && file.length() > 0;
     }
 
     public void commitChanges() {
+        if (!hasUncommittedTransactions()) {
+            System.out.println("No uncommitted transactions to commit.");
+            return;
+        }
         try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
              BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
             String line;
@@ -313,18 +335,13 @@ public class ProductController implements Color {
                 writer.newLine();
             }
             System.out.println("Changes committed successfully!");
+            this.changesCommitted = true; // Set the flag indicating changes have been committed
         } catch (IOException e) {
             System.err.println("Error committing changes: " + e.getMessage());
         }
     }
-
-    public boolean isTransactionEmpty() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"))) {
-            return reader.readLine() == null;
-        } catch (IOException e) {
-            System.err.println("Error checking transaction file: " + e.getMessage());
-            return false;
-        }
+    public boolean areChangesCommitted() {
+        return this.changesCommitted;
     }
 
     public List<Product> searchProductByName(String name) {
@@ -583,20 +600,14 @@ public class ProductController implements Color {
         }
     }
 
-    public boolean backupDataTransactions() {
-        File file = new File("backup/backup_product.bak");
-        return file.exists() && file.length() > 0;
-    }
     public void handleBackupDecision() {
-        if (backupDataTransactions()) {
-            //System.out.println("You have uncommitted transactions.");
-            System.out.print("Do you want back up data?[Y/n]: ");
-            String decision = input.nextLine().trim().toLowerCase();
-            if (decision.equals("y")) {
-                backupData();
-            } else {
-                System.out.println("You didn't backup data....!");
-            }
+        //System.out.println("You have uncommitted transactions.");
+        System.out.print("Do you want back up data?[Y/n]: ");
+        String decision = input.nextLine().trim().toLowerCase();
+        if (decision.equals("y")) {
+            backupData();
+        } else {
+            System.out.println("You didn't backup data....!");
         }
     }
 

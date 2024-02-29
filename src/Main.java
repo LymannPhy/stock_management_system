@@ -8,19 +8,14 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
+import static view.Color.reset;
+import static view.Color.yellow;
+
 public class Main {
     static ProductView view = new ProductView();
     static Scanner scanner = new Scanner(System.in);
-    public static void displayASCIIArt() {
-        System.out.println("WELCOME TO STOCK MANAGEMENT SYSTEM");
-        System.out.println("" +
-                "\u001B[34m╔═╗┌┬┐┌─┐┌─┐┬┌─╔╦╗┌─┐┌┐┌┌─┐┌─┐┌─┐┬─┐\n" +
-                "╚═╗ │ │ ││  ├┴┐║║║├─┤│││├─┤│ ┬├┤ ├┬┘\n" +
-                "╚═╝ ┴ └─┘└─┘┴ ┴╩ ╩┴ ┴┘└┘┴ ┴└─┘└─┘┴└─\u001B[0m");
-    }
 
     public static void main(String[] args) {
-        displayASCIIArt();
         List<Product> products = new ArrayList<>();
         // Pass the list of products to the ProductController constructor
         ProductController controller = new ProductController(products);
@@ -38,11 +33,6 @@ public class Main {
                     //controller.readDataFromFile("data/transaction.dat");
                     view.displayProducts(products);
                 }
-                //case "k" -> controller.backUp();
-                /*case "t" -> {
-                    controller.restore();
-                    controller.start();
-                }*/
                 case "m" -> {
                     while (true){
                         System.out.println("1. Write");
@@ -118,7 +108,6 @@ public class Main {
                 }
                 case "b", "B" -> System.out.println("Backup option chosen");
                 case "k", "K" -> {
-                    System.out.println("Back up option chosen");
                     controller.handleBackupDecision();
                 }
                 case "t", "T" -> {
@@ -131,14 +120,12 @@ public class Main {
                     help.displayHelp();
                 }
                 case "x", "X" -> {
-                    if (controller.hasUncommittedTransactions()) {
-                        System.out.println("You have uncommitted transactions.");
-                        System.out.print("Do you want to save or lose data?[Y/n]: ");
-                        String decision = scanner.nextLine().trim().toLowerCase();
-                        if (decision.equals("y")) {
+                    if (!controller.areChangesCommitted()) {
+                        System.out.println("Changes have not been committed yet.");
+                        System.out.print("Do you want to commit changes before exiting?[Y/n]: ");
+                        String commitDecision = scanner.nextLine().trim().toLowerCase();
+                        if (commitDecision.equals("y")) {
                             controller.commitChanges();
-                        } else {
-                            System.out.println("Exiting the program without saving data.");
                         }
                     }
                     System.out.println("Exiting the program.");
