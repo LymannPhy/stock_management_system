@@ -38,9 +38,29 @@ public class ProductController implements Color {
         this.nextProductNumber = loadNextProductNumber(); // Load from file or database
     }
 
+    public void logo(){
+        String logo = """
+                \t\t\t\t\t ╔════════════════════════════════════════════════════════╗
+                \t\t\t\t\t ║ \t\t ██████╗███████╗████████╗ █████╗ ██████╗          ║
+                \t\t\t\t\t ║ \t\t██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗         ║
+                \t\t\t\t\t ║ \t\t██║     ███████╗   ██║   ███████║██║  ██║         ║
+                \t\t\t\t\t ║ \t\t██║     ╚════██║   ██║   ██╔══██║██║  ██║         ║
+                \t\t\t\t\t ║ \t\t╚██████╗███████║   ██║   ██║  ██║██████╔╝         ║
+                \t\t\t\t\t ║ \t\t ╚═════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═════╝          ║
+                \t\t\t\t\t ║ \t\t\t Center Science Technology and                ║
+                \t\t\t\t\t ║ \t\t\t\t Advanced Development                     ║
+                \t\t\t\t\t ║ \t\t☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆        ║
+                \t\t\t\t\t ║ \t\t\t\t Stock Management System                  ║
+                \t\t\t\t\t ║ \t\t☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆        ║
+                \t\t\t\t\t ╚════════════════════════════════════════════════════════╝
+                """;
+        System.out.println("\n"+ yellow +logo + reset);
+    }
+
     public void start(){
-        index();
         //loading();
+        logo();
+        index();
         //readToList("data/product.dat");
     }
 
@@ -99,16 +119,17 @@ public class ProductController implements Color {
         } catch (IOException e) {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
+        System.out.println();
     }
 
     public void loading(){
         for (int i = 0; i <= 100; i+=2) {
-            int totalBlocks = 50;
+            int totalBlocks = 30;
             int blocksToShow = (i * totalBlocks) / 100;
-            System.out.print(" ".repeat(20) + " Loading [ " + i + "% ]");
+            System.out.print(" ".repeat(10) + " Loading [ " + i + "% ]");
             System.out.print(" ".repeat(10) + getProgressBar(blocksToShow, totalBlocks) + "\r");
             try {
-                Thread.sleep(30);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
