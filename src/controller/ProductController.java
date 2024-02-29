@@ -11,6 +11,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -496,7 +498,10 @@ public class ProductController implements Color {
 
     // Method to backup product data to a file
     public void backupData() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("backup/backup_product.bak"))) {
+        LocalDateTime now = LocalDateTime.now();
+        String formattedDateTime = now.format(DateTimeFormatter.ofPattern("dd-MMM-yy (HH_mm_ss)"));
+        String fileName = "backup/backup-" + formattedDateTime + ".bak";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             for (Product product : products) {
                 String line = String.format("%s,%s,%.2f,%d,%s%n",
                         product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
