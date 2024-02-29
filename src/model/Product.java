@@ -1,9 +1,10 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class Product {
+public class Product implements Serializable {
     private String code;
     private String name;
     private Double price;
