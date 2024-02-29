@@ -4,6 +4,7 @@ import view.MenuView;
 import view.ProductView;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -48,17 +49,23 @@ public class Main {
                         System.out.println("2. Read");
                         System.out.println("3. Back");
                         System.out.print("Choose : ");
-                        int op = scanner.nextInt();
-                        switch (op){
-                            case 1 -> controller.randomWrite();
-                            case 2 -> {
-                                controller.randomRead("data/transaction.dat");
-                                view.displayProducts(products);
+                        try {
+                            int op = scanner.nextInt();
+                            switch (op) {
+                                case 1 -> controller.randomWrite();
+                                case 2 -> {
+                                    controller.randomRead("data/transaction.dat");
+                                    view.displayProducts(products);
+                                }
+                                case 3 -> {
+                                    System.out.println("Back to menu");
+                                    continue aa;
+                                }
+                                default -> System.out.println("Invalid choice, please enter a number between 1 and 3");
                             }
-                            case 3 -> {
-                                System.out.println("Back to menu");
-                                continue aa;
-                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                            scanner.next(); // Clear the invalid input from the scanner
                         }
                     }
                 }
