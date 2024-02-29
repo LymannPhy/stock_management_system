@@ -250,7 +250,7 @@ public class ProductController implements Color {
 
     public void commitChanges() {
         try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
-             BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat", true))) {
+             BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 writer.write(line);
@@ -513,13 +513,13 @@ public class ProductController implements Color {
     }
     public void handleBackupDecision() {
         if (backupDataTransactions()) {
-            System.out.println("You have uncommitted transactions.");
-            System.out.print("Do you want to save or lose data?[Y/n]: ");
+            //System.out.println("You have uncommitted transactions.");
+            System.out.print("Do you want back up data?[Y/n]: ");
             String decision = input.nextLine().trim().toLowerCase();
             if (decision.equals("y")) {
                 backupData();
             } else {
-                System.out.println("Exiting the program without saving data.");
+                System.out.println("You didn't backup data....!");
             }
         }
     }
