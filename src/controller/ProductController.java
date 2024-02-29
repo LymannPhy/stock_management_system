@@ -24,8 +24,11 @@ public class ProductController implements Color {
     private static List<Product> products;
     private HashSet<String> usedProductCodes;
     static Scanner scanner = new Scanner(System.in);
+    private ProductView view = new ProductView();
     private int nextProductNumber;
     private static volatile boolean isLoading = true;
+    static int amountProduct;
+    Scanner input = new Scanner(System.in);
 
     public ProductController(List<Product> products) {
         this.products = products;
@@ -80,15 +83,16 @@ public class ProductController implements Color {
     public void randomWrite() {
         System.out.print("> Enter random amount = ");
         int amount = scanner.nextInt();
-        String sDigit = String.valueOf(amount);
+        amountProduct = amount;
         System.out.print("> Are you sure to random " + amount + " products? [y/n]: ");
         scanner.nextLine();
         String save = scanner.nextLine();
         if (Objects.equals(save, "y")) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat"))) {
                 long startTime = System.nanoTime(); // Start time
-                for (int i =  0; i < amount; i++) {
-                    Product newProduct = new Product("CSTAD-" + (i +   1), "P" + (i +   1),   10.00d,   10, LocalDate.now().toString());
+                int i = 0;
+                while (i < amount) {
+                    Product newProduct = new Product("CSTAD-" + (i +   1), "P" + (i +  1), 10.00d, 10, LocalDate.now().toString());
                     String serializedProduct = serializeProduct(newProduct);
                     writer.write(serializedProduct);
                     writer.newLine();
@@ -96,9 +100,9 @@ public class ProductController implements Color {
                         int progress = ((i + 1) * 100) / amount;
                         System.out.print("\rLoading[" + progress + "%]");
                     }
-
+                    i++;
                 }
-                System.out.println("\r"+amount + " Product(s) created successfully.");
+                System.out.println("\r"+amount + " Products created successfully.");
                 long endTime = System.nanoTime(); // End time
                 long resultTime = endTime - startTime;
                 System.out.println("Writing " + amount + " products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
@@ -114,16 +118,22 @@ public class ProductController implements Color {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             long startTime = System.nanoTime();
+            int i=0;
             while ((line = reader.readLine()) != null) {
                 Product product = parseProductLine(line);
                 if (product != null) {
                     products.add(product);
                     usedProductCodes.add(product.getCode());
                 }
+                i+=1;
+                if ( (amountProduct > 10000) && (i + 1) % (amountProduct / 10) == 0 || i == amountProduct - 1) {
+                    int progress = ((i + 1) * 100) / amountProduct;
+                    System.out.print("\rLoading[" + progress + "%]");
+                }
             }
             long endTime = System.nanoTime();
             long resultTime = endTime - startTime;
-            System.out.println("Read products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
+            System.out.println("\rRead products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
         } catch (IOException e) {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
@@ -240,7 +250,7 @@ public class ProductController implements Color {
 
     public void commitChanges() {
         try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
-             BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat", false))) {
+             BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 writer.write(line);
@@ -428,4 +438,90 @@ public class ProductController implements Color {
     private String serializeProduct(Product product) {
         return String.format("%s,%s,%.2f,%d,%s", product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
     }
+
+    // Method to restore product data from a backup file
+    public void restoreData() {
+        File backupFolder = new File("backup");
+        File[] backupFiles = backupFolder.listFiles((dir, name) -> name.endsWith(".bak"));
+        if (backupFiles == null || backupFiles.length == 0) {
+            System.out.println("No backup files found in the backup_product folder.");
+            return;
+        }
+
+        System.out.println("Available backup files:");
+        for (int i = 0; i < backupFiles.length; i++) {
+            System.out.println((i + 1) + ". " + backupFiles[i].getName());
+        }
+
+        System.out.print("Enter the number of the backup file to restore: ");
+        Scanner scanner = new Scanner(System.in);
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline character
+        if (choice < 1 || choice > backupFiles.length) {
+            System.out.println("Invalid choice.");
+            return;
+        }
+
+        String filePath = backupFiles[choice - 1].getPath();
+        List<Product> restoredProducts = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 5) { // Assuming the format is consistent
+                    Product product = new Product();
+                    product.setCode(parts[0]);
+                    product.setName(parts[1]);
+                    product.setPrice(Double.parseDouble(parts[2]));
+                    product.setQty(Integer.parseInt(parts[3]));
+                    product.setImported_at(parts[4]);
+                    restoredProducts.add(product);
+                } else {
+                    System.out.println("Invalid data format in the file.");
+                }
+            }
+            // Replace the existing product data with the restored data
+            products.clear();
+            products.addAll(restoredProducts);
+            System.out.println("Product data restored successfully from " + filePath);
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: File not found at path " + filePath);
+        } catch (IOException e) {
+            System.out.println("Error reading product data: " + e.getMessage());
+        }
+    }
+
+
+
+
+    // Method to backup product data to a file
+    public void backupData() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("backup/backup_product.bak"))) {
+            for (Product product : products) {
+                String line = String.format("%s,%s,%.2f,%d,%s%n",
+                        product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
+                writer.write(line);
+            }
+            System.out.println("Product data backed up successfully.");
+        } catch (IOException e) {
+            System.out.println("Error backing up product data: " + e.getMessage());
+        }
+    }
+    public boolean backupDataTransactions() {
+        File file = new File("backup/backup_product.bak");
+        return file.exists() && file.length() > 0;
+    }
+    public void handleBackupDecision() {
+        if (backupDataTransactions()) {
+            //System.out.println("You have uncommitted transactions.");
+            System.out.print("Do you want back up data?[Y/n]: ");
+            String decision = input.nextLine().trim().toLowerCase();
+            if (decision.equals("y")) {
+                backupData();
+            } else {
+                System.out.println("You didn't backup data....!");
+            }
+        }
+    }
+
 }

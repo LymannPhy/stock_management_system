@@ -15,6 +15,7 @@ public class Main {
         // Pass the list of products to the ProductController constructor
         ProductController controller = new ProductController(products);
         controller.start();
+        boolean dataRestored = false;
         // Display menu and handle user input
         aa:
         while (true) {
@@ -43,7 +44,7 @@ public class Main {
                             case 1 -> controller.randomWrite();
                             case 2 -> {
                                 controller.randomRead("data/transaction.dat");
-                                view.randomDisplay(products);
+                                view.displayProducts(products);
                             }
                             case 3 -> {
                                 System.out.println("Back to menu");
@@ -99,7 +100,16 @@ public class Main {
                     // Commit changes
                     controller.commitChanges();
                 }
-                //case "b", "B" -> controller.backUp();
+                case "b", "B" -> System.out.println("Backup option chosen");
+                case "k", "K" -> {
+                    System.out.println("Back up option chosen");
+                    controller.handleBackupDecision();
+                }
+                case "t", "T" -> {
+                    System.out.println("Restore option chosen");
+                    controller.restoreData();
+                    dataRestored = true;
+                }
                 case "h", "H" -> {
                     MenuView help = new MenuView();
                     help.displayHelp();
