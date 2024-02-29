@@ -484,14 +484,24 @@ public class ProductController implements Color {
             products.clear();
             products.addAll(restoredProducts);
             System.out.println("Product data restored successfully from " + filePath);
+
+            // Write the restored data to "product.dat" file
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
+                for (Product product : restoredProducts) {
+                    writer.write(product.getCode() + "," + product.getName() + "," + product.getPrice() + ","
+                            + product.getQty() + "," + product.getImported_at() + "\n");
+                }
+                System.out.println("Restored data written to product.dat");
+            } catch (IOException e) {
+                System.out.println("Error writing restored data to product.dat: " + e.getMessage());
+            }
+
         } catch (FileNotFoundException e) {
             System.out.println("Error: File not found at path " + filePath);
         } catch (IOException e) {
             System.out.println("Error reading product data: " + e.getMessage());
         }
     }
-
-
 
 
     // Method to backup product data to a file
