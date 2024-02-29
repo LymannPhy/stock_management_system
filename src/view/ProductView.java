@@ -21,7 +21,7 @@ public class ProductView implements Color {
     public void displayProducts(List<Product> products) {
         while (true) {
             display(products);
-            System.out.print("(B).Back or to Navigate page: ");
+            System.out.print("\uD83C\uDD71️.Back or to Navigate page: ");
             String page = scanner.nextLine();
             if(Objects.equals(page, "b")) return;
             switch (page.toLowerCase()){
@@ -36,7 +36,7 @@ public class ProductView implements Color {
                     else currentPage-=1;
                 }
                 case "g" -> {
-                    System.out.print("Enter numberPage to navigate = ");
+                    System.out.print("➡️ Enter numberPage to navigate = ");
                     int pageInput = scanner.nextInt();
                     if(pageInput > pageSize) {
                         System.out.println("The maximum page is "+page+" only.");
@@ -58,7 +58,7 @@ public class ProductView implements Color {
                     currentPage = pageSize;
                 }
                 default -> {
-                    System.out.println("Invalidate option...!");
+                    System.out.println("⚠️ Invalidate option...!");
                 }
             }
         }
@@ -99,18 +99,18 @@ public class ProductView implements Color {
     }
 
     public void setRow(){
-        System.out.println("#".repeat(15));
-        System.out.println("# Set row to display in table");
-        System.out.print("> Enter row: ");
+        System.out.println("#️⃣".repeat(15));
+        System.out.println("#️⃣ Set row to display in table");
+        System.out.print("➡️ Enter row: ");
         int rowInput = scanner.nextInt();
         scanner.nextLine();
-        System.out.print("> Are you sure to set row display? [y/n]: ");
+        System.out.print("\uD83E\uDD14 Are you sure to set row display? [y/n]: ");
         String save = scanner.nextLine();
         if(save.equalsIgnoreCase("y")){
             rowPerPage = rowInput;
-            System.out.println("# Set row successfully...!");
+            System.out.println("✔️  Set row successfully...!");
         }
-        System.out.println("#".repeat(15));
+        System.out.println("#️⃣".repeat(15));
     }
 
     public void randomDisplay(List<Product> product){
@@ -160,7 +160,7 @@ public class ProductView implements Color {
             table.addCell("Imported Date" + " ".repeat(9) + ": " + product.getImported_at());
             System.out.println(table.render());
         } else {
-            System.out.println("Product not found.");
+            System.out.println("\uD83D\uDEAB Product not found.");
         }
     }
     public void previewUpdate(String code,String name,double price,int qty,String date) {

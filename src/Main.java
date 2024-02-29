@@ -20,7 +20,7 @@ public class Main {
         aa:
         while (true) {
             MenuView.displayMenu();
-            System.out.print("➡\uFE0F Enter your choice: ");
+            System.out.print("➡️ Enter your choice: ");
             String choice = scanner.nextLine().trim();
             switch (choice.toLowerCase()) {
                 case "l" -> {
@@ -30,10 +30,11 @@ public class Main {
                 }
                 case "m" -> {
                     while (true){
-                        System.out.println("1. Write");
-                        System.out.println("2. Read");
-                        System.out.println("3. Back");
-                        System.out.print("Choose : ");
+                        System.out.println("#️⃣ Menu of random #️⃣");
+                        System.out.println("1️⃣ Write");
+                        System.out.println("2️⃣ Read");
+                        System.out.println("3️⃣ Back to main menu");
+                        System.out.print("➡️ Choose option : ");
                         int op = scanner.nextInt();
                         switch (op){
                             case 1 -> controller.randomWrite();
@@ -42,26 +43,26 @@ public class Main {
                                 view.displayProducts(products);
                             }
                             case 3 -> {
-                                System.out.println("Back to menu");
+                                System.out.println("⬅️ Back to menu");
                                 continue aa;
                             }
                         }
                     }
                 }
-                //case "cl" -> ProductController.clearFile();
+                case "cl" -> ProductController.clear();
                 case "w" -> {
                     // Create new product
                     controller.createProduct();
                 }
                 case "r" -> {
-                    System.out.print("Enter product code: ");
+                    System.out.print("➡️ Enter product code: ");
                     String productCode = scanner.nextLine().trim();
                     Product product = controller.getProductDetailByCode(productCode);
                     ProductView view = new ProductView();
                     view.displayProductDetails(product);
                 }
                 case "e" -> {
-                    System.out.print("Enter Product Code: ");
+                    System.out.print("➡️ Enter Product Code: ");
                     String productCode = scanner.nextLine().trim();
                     Product product = controller.getProductDetailByCode(productCode);
                     ProductView view = new ProductView();
@@ -74,16 +75,16 @@ public class Main {
 
                 }
                 case "d" -> {
-                    System.out.print("Enter product code to delete: ");
+                    System.out.print("➡️ Enter product code to delete: ");
                     String productCode = scanner.nextLine().trim();
                     controller.deleteProductByCode(productCode);
                 }
                 case "s" -> {
-                    System.out.print("Enter product name to search: ");
+                    System.out.print("➡️ Enter product name to search: ");
                     String searchTerm = scanner.nextLine().trim();
                     List<Product> searchResults = controller.searchProductByName(searchTerm);
                     if (searchResults.isEmpty()) {
-                        System.out.println("No matching products found.");
+                        System.out.println("❌ No matching products found.");
                     } else {
                         ProductView view = new ProductView();
                         view.displayProducts(searchResults);
@@ -95,7 +96,6 @@ public class Main {
                     // Commit changes
                     controller.commitChanges();
                 }
-                case "b" -> System.out.println("Backup option chosen");
                 case "k" -> {
                     System.out.println("Back up option chosen");
                     controller.handleBackupDecision();
@@ -111,8 +111,8 @@ public class Main {
                 }
                 case "x"-> {
                     if (controller.hasUncommittedTransactions()) {
-                        System.out.println("You have uncommitted transactions.");
-                        System.out.print("Do you want to save or lose data?[Y/n]: ");
+                        System.out.println("✅ You have uncommitted transactions.");
+                        System.out.print("❓ Do you want to save or lose data?[Y/n]: ");
                         String decision = scanner.nextLine().trim().toLowerCase();
                         if (decision.equals("y")) {
                             controller.commitChanges();
@@ -120,11 +120,10 @@ public class Main {
                             System.out.println("Exiting the program without saving data.");
                         }
                     }
-                    System.out.println("Exiting the program.");
+                    System.out.println("\uD83D\uDD1A Exiting the program.");
                     return;
                 }
-
-                default -> System.out.println("Invalid choice. Please try again.");
+                default -> System.out.println("⚠️ Invalid choice. Please try again.");
             }
         }
     }

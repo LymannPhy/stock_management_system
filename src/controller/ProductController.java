@@ -75,11 +75,9 @@ public class ProductController implements Color {
                 if (product != null) {
                     products.add(product);
                     usedProductCodes.add(product.getCode());
-                    if (count == 100) System.out.print("\r* . . .");
-                    if (count == 200) System.out.print("\r. * . .");
-                    if (count == 300) System.out.print("\r. . * .");
+                    if (count == 100) System.out.print("\r♨️ Data is Loading ...../|");
                     if (count == 400) {
-                        System.out.print("\r. . . *");
+                        System.out.print("\rData is Loading .....|\\\"");
                         count=1;
                     }
 
@@ -97,7 +95,7 @@ public class ProductController implements Color {
             }
             long endTime = System.nanoTime(); // End time
             long resultTime = endTime - startTime;
-            System.out.println(reset+"\rLoading spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
+            System.out.println(reset+"\r♨️ Loading spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
         } catch (IOException e) {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
@@ -126,10 +124,10 @@ public class ProductController implements Color {
 
     // choice 1
     public void randomWrite() {
-        System.out.print("> Enter random amount = ");
+        System.out.print("➡️ Enter random amount = ");
         int amount = scanner.nextInt();
         amountProduct = amount;
-        System.out.print("> Are you sure to random " + amount + " products? [y/n]: ");
+        System.out.print("\uD83E\uDD14 Are you sure to random " + amount + " products? [y/n]: ");
         scanner.nextLine();
         String save = scanner.nextLine();
         if (Objects.equals(save, "y")) {
@@ -147,10 +145,10 @@ public class ProductController implements Color {
                     }
                     i++;
                 }
-                System.out.println("\r"+amount + " Products created successfully.");
+                System.out.println("\r"+amount + " ✅ Products created successfully.");
                 long endTime = System.nanoTime(); // End time
                 long resultTime = endTime - startTime;
-                System.out.println("Writing " + amount + " products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
+                System.out.println("\uD83D\uDCDD Write " + amount + " products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
             } catch (IOException e) {
                 System.err.println("Error writing to transaction file: " + e.getMessage());
             }
@@ -161,7 +159,7 @@ public class ProductController implements Color {
         String filePath = "data/product.dat";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write("");
-            System.out.println("Space written to file successfully.");
+            System.out.println("✅ Space written to file successfully.");
         } catch (IOException e) {
             System.err.println("An error occurred while writing to the file.");
             e.printStackTrace();
@@ -185,12 +183,12 @@ public class ProductController implements Color {
                 i+=1;
                 if ( (amountProduct > 10000) && (i + 1) % (amountProduct / 10) == 0 || i == amountProduct - 1) {
                     int progress = ((i + 1) * 100) / amountProduct;
-                    System.out.print("\rLoading[" + progress + "%]");
+                    System.out.print("\r♨️ Loading[" + progress + "%]");
                 }
             }
             long endTime = System.nanoTime();
             long resultTime = endTime - startTime;
-            System.out.println("\rRead products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
+            System.out.println("\r\uD83D\uDC68\u200D\uD83D\uDCBB Read products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
         } catch (IOException e) {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
@@ -230,13 +228,13 @@ public class ProductController implements Color {
 
         String code = generateProductCode();
 
-        System.out.print("Enter product name: ");
+        System.out.print("➡️ Enter product name: ");
         String name = scanner.nextLine();
 
-        System.out.print("Enter product price: ");
+        System.out.print("➡️ Enter product price: ");
         double price = scanner.nextDouble();
 
-        System.out.print("Enter product quantity: ");
+        System.out.print("➡️ Enter product quantity: ");
         int qty = scanner.nextInt();
 
         scanner.nextLine();
@@ -251,7 +249,7 @@ public class ProductController implements Color {
         newProduct.setQty(qty);
         newProduct.setImported_at(imported_at);
 
-        System.out.print("Are you sure to create a new product?[Y/n]: ");
+        System.out.print("❓ Are you sure to create a new product?[Y/n]: ");
         String confirmation = scanner.nextLine().trim().toLowerCase();
         if (confirmation.equals("y") || confirmation.equals("yes")) {
             products.add(newProduct);
@@ -260,12 +258,12 @@ public class ProductController implements Color {
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat", true))) {
                 writer.write(serializedProduct + "\n");
-                System.out.println("Product has been created successfully!");
+                System.out.println("✅ Product has been created successfully!");
             } catch (IOException e) {
                 System.err.println("Error writing to transaction file: " + e.getMessage());
             }
         } else {
-            System.out.println("Product creation cancelled.");
+            System.out.println("❌ Product creation cancelled.");
         }
     }
 
@@ -313,7 +311,7 @@ public class ProductController implements Color {
                 writer.write(line);
                 writer.newLine();
             }
-            System.out.println("Changes committed successfully!");
+            System.out.println("✅ Changes committed successfully!");
         } catch (IOException e) {
             System.err.println("Error committing changes: " + e.getMessage());
         }
@@ -391,27 +389,27 @@ public class ProductController implements Color {
         }
         Scanner sure = new Scanner(System.in);
         Scanner scanner = new Scanner(System.in);
-        System.out.println("# What do you want to update?");
-        System.out.println("1. All");
-        System.out.println("2. NAME");
-        System.out.println("3. UNIT PRICE");
-        System.out.println("4. QTY");
-        System.out.println("5. Back to Menu");
-        System.out.print("> Choose Option [1-5] :");
+        System.out.println("#️⃣  What do you want to update?");
+        System.out.println("1️⃣  All");
+        System.out.println("2️⃣  NAME");
+        System.out.println("3️⃣  UNIT PRICE");
+        System.out.println("4️⃣  QTY");
+        System.out.println("5️⃣  Back to Menu");
+        System.out.print("➡️ Choose Option [1-5] :");
         String choose = scanner.nextLine();
         switch (choose) {
             case "1" -> {
                 try {
                     // Update all attribute
-                    System.out.print("> Product's Name :");
+                    System.out.print("➡️ Product's Name :");
                     String productName = scanner.nextLine();
-                    System.out.print("> Product's Price:");
+                    System.out.print("➡️ Product's Price:");
                     double productPrice = Double.parseDouble(scanner.nextLine());
-                    System.out.print("> Product's QTY :");
+                    System.out.print("➡️ Product's QTY :");
                     int productQty = Integer.parseInt(scanner.nextLine());
                     ProductView view = new ProductView();
                     view.previewUpdate(code, productName, productPrice, productQty, pDate);
-                    System.out.print("[!] Are you sure you want to Update?? [Y/N] :");
+                    System.out.print("❓ Are you sure you want to Update?? [Y/N] :");
                     String want = sure.next();
                     if (want.equalsIgnoreCase("y")) {
                         for (Product product : products) {
@@ -420,15 +418,15 @@ public class ProductController implements Color {
                                 product.setPrice(productPrice);
                                 product.setQty(productQty);
                                 writeProductsToFile(); // Update all products to the file
-                                System.out.println("Update Product Successfully!!");
+                                System.out.println("✅ Update Product Successfully!!");
                                 return;
                             }
                         }
                     } else if (want.equalsIgnoreCase("n")) {
-                        System.out.println("# You didn't Update Anything");
+                        System.out.println("#️⃣ You didn't Update Anything");
                     }
                 } catch (Exception e) {
-                    System.out.println("[!] Might be error, wrong input " + e.getMessage());
+                    System.out.println("❗ Might be error, wrong input " + e.getMessage());
                 }
             }
             case "2" -> {
@@ -440,8 +438,8 @@ public class ProductController implements Color {
             case "4" -> {
                 updateAttribute(code, scanner, "QTY", pName, pPrice, pQty, pDate);
             }
-            case "5" -> System.out.println("# Back to menu");
-            default -> System.out.println("# Invalid Input Choose! Please try again....");
+            case "5" -> System.out.println("⬅️ Back to menu");
+            default -> System.out.println("⚠️ Invalid Input Choose! Please try again....");
         }
     }
 
@@ -472,10 +470,10 @@ public class ProductController implements Color {
                     }
                 }
             } else if (want.equalsIgnoreCase("n")) {
-                System.out.println("# You didn't Update anything");
+                System.out.println("#️ You didn't Update anything");
             }
         } catch (Exception e) {
-            System.out.println("[!] Might be error, wrong input " + e.getMessage());
+            System.out.println("❗ Might be error, wrong input " + e.getMessage());
         }
     }
 
@@ -501,21 +499,21 @@ public class ProductController implements Color {
         File backupFolder = new File("backup");
         File[] backupFiles = backupFolder.listFiles((dir, name) -> name.endsWith(".bak"));
         if (backupFiles == null || backupFiles.length == 0) {
-            System.out.println("No backup files found in the backup_product folder.");
+            System.out.println("⚠\uFE0F No backup files found in the backup_product folder.");
             return;
         }
 
-        System.out.println("Available backup files:");
+        System.out.println("\uD83D\uDC81 Available backup files:");
         for (int i = 0; i < backupFiles.length; i++) {
             System.out.println((i + 1) + ". " + backupFiles[i].getName());
         }
 
-        System.out.print("Enter the number of the backup file to restore: ");
+        System.out.print("➡\uFE0F Enter the number of the backup file to restore: ");
         Scanner scanner = new Scanner(System.in);
         int choice = scanner.nextInt();
         scanner.nextLine(); // Consume newline character
         if (choice < 1 || choice > backupFiles.length) {
-            System.out.println("Invalid choice.");
+            System.out.println("⚠\uFE0F Invalid choice.");
             return;
         }
 
@@ -534,13 +532,13 @@ public class ProductController implements Color {
                     product.setImported_at(parts[4]);
                     restoredProducts.add(product);
                 } else {
-                    System.out.println("Invalid data format in the file.");
+                    System.out.println("⚠\uFE0F Invalid data format in the file.");
                 }
             }
             // Replace the existing product data with the restored data
             products.clear();
             products.addAll(restoredProducts);
-            System.out.println("Product data restored successfully from " + filePath);
+            System.out.println("✅ Product data restored successfully from " + filePath);
 
             // Write the restored data to "product.dat" file
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
@@ -548,7 +546,7 @@ public class ProductController implements Color {
                     writer.write(product.getCode() + "," + product.getName() + "," + product.getPrice() + ","
                             + product.getQty() + "," + product.getImported_at() + "\n");
                 }
-                System.out.println("Restored data written to product.dat");
+                System.out.println("✅ Restored data written to product.dat");
             } catch (IOException e) {
                 System.out.println("Error writing restored data to product.dat: " + e.getMessage());
             }
@@ -572,9 +570,9 @@ public class ProductController implements Color {
                         product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
                 writer.write(line);
             }
-            System.out.println("Product data backed up successfully.");
+            System.out.println("✅ Product data backed up successfully.");
         } catch (IOException e) {
-            System.out.println("Error backing up product data: " + e.getMessage());
+            System.out.println("⚠\uFE0F Error backing up product data: " + e.getMessage());
         }
     }
 
@@ -585,12 +583,12 @@ public class ProductController implements Color {
     public void handleBackupDecision() {
         if (backupDataTransactions()) {
             //System.out.println("You have uncommitted transactions.");
-            System.out.print("Do you want back up data?[Y/n]: ");
+            System.out.print("❓ Do you want back up data?[Y/n]: ");
             String decision = input.nextLine().trim().toLowerCase();
             if (decision.equals("y")) {
                 backupData();
             } else {
-                System.out.println("You didn't backup data....!");
+                System.out.println("❗You didn't backup data....!");
             }
         }
     }
