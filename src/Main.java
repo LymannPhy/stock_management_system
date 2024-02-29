@@ -28,11 +28,6 @@ public class Main {
                     //controller.readDataFromFile("data/transaction.dat");
                     view.displayProducts(products);
                 }
-                //case "k" -> controller.backUp();
-                /*case "t" -> {
-                    controller.restore();
-                    controller.start();
-                }*/
                 case "m" -> {
                     while (true){
                         System.out.println("1. Write");
@@ -43,7 +38,7 @@ public class Main {
                         switch (op){
                             case 1 -> controller.randomWrite();
                             case 2 -> {
-                                controller.randomRead("data/transaction.dat");
+                                controller.randomRead("data/product.dat");
                                 view.displayProducts(products);
                             }
                             case 3 -> {
@@ -65,7 +60,7 @@ public class Main {
                     ProductView view = new ProductView();
                     view.displayProductDetails(product);
                 }
-                case "e", "E" -> {
+                case "e" -> {
                     System.out.print("Enter Product Code: ");
                     String productCode = scanner.nextLine().trim();
                     Product product = controller.getProductDetailByCode(productCode);
@@ -78,12 +73,12 @@ public class Main {
                     }
 
                 }
-                case "d", "D" -> {
+                case "d" -> {
                     System.out.print("Enter product code to delete: ");
                     String productCode = scanner.nextLine().trim();
                     controller.deleteProductByCode(productCode);
                 }
-                case "s", "S" -> {
+                case "s" -> {
                     System.out.print("Enter product name to search: ");
                     String searchTerm = scanner.nextLine().trim();
                     List<Product> searchResults = controller.searchProductByName(searchTerm);
@@ -95,26 +90,26 @@ public class Main {
                     }
                     break;
                 }
-                case "o", "O" -> view.setRow();
-                case "c", "C" -> {
+                case "o" -> view.setRow();
+                case "c" -> {
                     // Commit changes
                     controller.commitChanges();
                 }
-                case "b", "B" -> System.out.println("Backup option chosen");
-                case "k", "K" -> {
+                case "b" -> System.out.println("Backup option chosen");
+                case "k" -> {
                     System.out.println("Back up option chosen");
                     controller.handleBackupDecision();
                 }
-                case "t", "T" -> {
+                case "t" -> {
                     System.out.println("Restore option chosen");
                     controller.restoreData();
                     dataRestored = true;
                 }
-                case "h", "H" -> {
+                case "h" -> {
                     MenuView help = new MenuView();
-                    help.displayHelp();
+                    MenuView.displayHelp();
                 }
-                case "x", "X" -> {
+                case "x"-> {
                     if (controller.hasUncommittedTransactions()) {
                         System.out.println("You have uncommitted transactions.");
                         System.out.print("Do you want to save or lose data?[Y/n]: ");

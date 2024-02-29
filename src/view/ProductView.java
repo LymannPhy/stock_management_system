@@ -29,15 +29,30 @@ public class ProductView implements Color {
                     currentPage=1;
                 }
                 case "p" -> {
-                    currentPage-=1;
+                    if(currentPage < 1){
+                        System.out.println("The minimum page is 1 only.");
+                        currentPage = 1;
+                    }
+                    else currentPage-=1;
                 }
                 case "g" -> {
                     System.out.print("Enter numberPage to navigate = ");
-                    Integer pageInput = scanner.nextInt();
-                    currentPage = pageInput;
+                    int pageInput = scanner.nextInt();
+                    if(pageInput > pageSize) {
+                        System.out.println("The maximum page is "+page+" only.");
+                        currentPage = pageSize;
+                    } else if (pageInput < 1) {
+                        System.out.println("The minimum page is 1 only.");
+                        currentPage = 1;
+                    }
+                    else currentPage = pageInput;
                 }
                 case "n" -> {
-                    currentPage+=1;
+                    if(currentPage > pageSize){
+                        System.out.println("The maximum page is "+page+" only.");
+                        currentPage = pageSize;
+                    }
+                    else currentPage+=1;
                 }
                 case "l" -> {
                     currentPage = pageSize;

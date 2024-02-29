@@ -198,3 +198,82 @@ import java.io.IOException;
             e.printStackTrace();
         }
     }*/
+
+/*public static Integer generateCodeFromFile(){
+        String filePath = "data/code_count.txt";
+        int code = 0;
+        try {
+            String data = Files.readString(Paths.get(filePath)).trim();
+            code = Integer.parseInt(data);
+            //System.out.println("The integer read from the file is: " + code);
+        } catch (IOException e) {
+            System.err.println("An error occurred while reading the file.");
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            System.err.println("The file does not contain a valid integer.");
+            e.printStackTrace();
+        }
+        return code;
+    }
+
+    public static void codeToFile(){
+        String filePath = "data/code_count.txt";
+        int data = generateCodeFromFile();
+        //int data = 10;
+        String line = String.valueOf(data);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write(line);
+            //System.out.println("Data written to the file successfully.");
+        } catch (IOException e) {
+            System.err.println("An error occurred while writing to the file: " + e.getMessage());
+        }
+    }
+
+    public void randomWrite() {
+        System.out.print("> Enter random amount = ");
+        int amount = scanner.nextInt();
+        amountProduct = amount;
+        System.out.print("> Are you sure to random " + amount + " products? [y/n]: ");
+        scanner.nextLine();
+        int sum=0;
+        String save = scanner.nextLine();
+        if (Objects.equals(save, "y")) {
+            //String codeA = generateProductCode(); // 3
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat",true))) {
+                long startTime = System.nanoTime(); // Start time
+                int i = 0;
+                int code = generateCodeFromFile();
+                while (i < amount) {
+                    Product newProduct = new Product("CSTAD-"+ (i+1), "P" + (i +  1), 10.00d, 10, LocalDate.now().toString());
+                    String serializedProduct = serializeProduct(newProduct);
+                    writer.write(serializedProduct);
+                    writer.newLine();
+                    if ( (amount > 10000) && (i + 1) % (amount / 10) == 0 || i == amount - 1) {
+                        int progress = ((i + 1) * 100) / amount;
+                        System.out.print("\rLoading[" + progress + "%]");
+                    }
+                    i++;
+                    code++;
+                    sum+=i;
+                }
+                System.out.println("\r"+amount + " Products created successfully.");
+                long endTime = System.nanoTime(); // End time
+                long resultTime = endTime - startTime;
+                System.out.println("Writing " + amount + " products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
+
+            } catch (IOException e) {
+                System.err.println("Error writing to transaction file: " + e.getMessage());
+            }
+            String filePath = "data/code_count.txt";
+            int data = generateCodeFromFile();
+            int temp = data + sum;
+            //int data = 10;
+            String line = String.valueOf(temp);
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                writer.write(line);
+                //System.out.println("Data written to the file successfully.");
+            } catch (IOException e) {
+                System.err.println("An error occurred while writing to the file: " + e.getMessage());
+            }
+        }
+    }*/

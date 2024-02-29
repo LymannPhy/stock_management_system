@@ -39,8 +39,9 @@ public class ProductController implements Color {
     }
 
     public void start(){
-        loading();
-        readToList("data/product.dat");
+        index();
+        //loading();
+        //readToList("data/product.dat");
     }
 
     public void readToList(String filename) {
@@ -55,6 +56,48 @@ public class ProductController implements Color {
                     usedProductCodes.add(product.getCode());
                 }
             }
+        } catch (IOException e) {
+            System.err.println("Error reading data from file: " + e.getMessage());
+        }
+    }
+
+    public void index(){
+        products.clear();
+        usedProductCodes.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
+            String line;
+            int i=0;
+            int count = 1;
+            System.out.print("Loading : "+green);
+            long startTime = System.nanoTime();
+            while ((line = reader.readLine()) != null) {
+                Product product = parseProductLine(line);
+                if (product != null) {
+                    products.add(product);
+                    usedProductCodes.add(product.getCode());
+                    if (count == 100) System.out.print("\r* . . .");
+                    if (count == 200) System.out.print("\r. * . .");
+                    if (count == 300) System.out.print("\r. . * .");
+                    if (count == 400) {
+                        System.out.print("\r. . . *");
+                        count=1;
+                    }
+
+                    /*if (count == 100) System.out.print(blue+ "\r██"+ reset + red + "██████████");
+                    if (count == 200) System.out.print("\r██"+reset + blue + "██"+reset + blue +"██████");
+                    if (count == 300) System.out.print("\r████"+reset + blue+"██"+reset + red + "████");
+                    if (count == 400) System.out.print("\r██████"+reset + blue+"██"+reset + red + "██");
+                    else if(count == 500){
+                        System.out.print("\r████████"+reset+blue+"██"+reset);
+                        count=1;
+                    }*/
+                    count++;
+                    i++;
+                }
+            }
+            long endTime = System.nanoTime(); // End time
+            long resultTime = endTime - startTime;
+            System.out.println(reset+"\rLoading spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
         } catch (IOException e) {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
@@ -90,7 +133,7 @@ public class ProductController implements Color {
         scanner.nextLine();
         String save = scanner.nextLine();
         if (Objects.equals(save, "y")) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat"))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat",true))) {
                 long startTime = System.nanoTime(); // Start time
                 int i = 0;
                 while (i < amount) {
@@ -113,6 +156,18 @@ public class ProductController implements Color {
             }
         }
     }
+
+    public static void clear(){
+        String filePath = "data/product.dat";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write("");
+            System.out.println("Space written to file successfully.");
+        } catch (IOException e) {
+            System.err.println("An error occurred while writing to the file.");
+            e.printStackTrace();
+        }
+    }
+
 
     public void randomRead(String filename){
         products.clear();
