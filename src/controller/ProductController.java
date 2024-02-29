@@ -509,8 +509,15 @@ public class ProductController implements Color {
 
         System.out.print("Enter the number of the backup file to restore: ");
         Scanner scanner = new Scanner(System.in);
-        int choice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline character
+        int choice;
+        try {
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline character
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            scanner.nextLine(); // Consume invalid input
+            return;
+        }
         if (choice < 1 || choice > backupFiles.length) {
             System.out.println("Invalid choice.");
             return;
