@@ -129,9 +129,11 @@ public class ProductController implements Color {
                 String[] parts = line.split(",");
                 if (parts.length > 0) {
                     String code = parts[0];
-                    int number = Integer.parseInt(code.substring(code.lastIndexOf("-") + 1));
-                    if (number > lastProductNumber) {
-                        lastProductNumber = number;
+                    if (!code.isEmpty()) { // Check if the code is not empty
+                        int number = Integer.parseInt(code.substring(code.lastIndexOf("-") + 1));
+                        if (number > lastProductNumber) {
+                            lastProductNumber = number;
+                        }
                     }
                 }
             }

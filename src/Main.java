@@ -10,7 +10,16 @@ import java.util.Scanner;
 public class Main {
     static ProductView view = new ProductView();
     static Scanner scanner = new Scanner(System.in);
+    public static void displayASCIIArt() {
+        System.out.println("WELCOME TO STOCK MANAGEMENT SYSTEM");
+        System.out.println("" +
+                "\u001B[34m╔═╗┌┬┐┌─┐┌─┐┬┌─╔╦╗┌─┐┌┐┌┌─┐┌─┐┌─┐┬─┐\n" +
+                "╚═╗ │ │ ││  ├┴┐║║║├─┤│││├─┤│ ┬├┤ ├┬┘\n" +
+                "╚═╝ ┴ └─┘└─┘┴ ┴╩ ╩┴ ┴┘└┘┴ ┴└─┘└─┘┴└─\u001B[0m");
+    }
+
     public static void main(String[] args) {
+        displayASCIIArt();
         List<Product> products = new ArrayList<>();
         // Pass the list of products to the ProductController constructor
         ProductController controller = new ProductController(products);
