@@ -505,7 +505,6 @@ public class ProductController implements Color {
         }
     }
 
-
     // Method to backup product data to a file
     public void backupData() {
         LocalDateTime now = LocalDateTime.now();
