@@ -4,16 +4,21 @@ import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
-public class MenuView {
+public class MenuView implements Color {
     // Method to display the menu
     public static void displayMenu() {
-        System.out.println("Application Menu");
-        System.out.println("""
-       ╔═════════════════════════════════════════════════════════════════════════════════════════════╗
-       ║ Disp(l)ay  |  Rando(m)   |   W)rite    |   R)ead     |   (E)dit   |   (D)elete  | (S)earch  ║
-       ║ Set R(o)ws |  (C)ommit   |   Res(t)ore |   Bac(k) up |   (H)elp   |   E(x)it                ║                                               ║
-       ╚═════════════════════════════════════════════════════════════════════════════════════════════╝
-        """);
+        //System.out.println(blue+ " ".repeat(35) +"➡\uFE0F Application Menu ⬅\uFE0F" + reset);
+        System.out.println(blue+ "☆".repeat(71) + reset);
+        System.out.print(magenta + """ 
+       ╔═════════════════════════════════════════════════════════════════════════════════════════════════╗
+       ║                                    Application Menu                                             ║
+       ║─────────────────────────────────────────────────────────────────────────────────────────────────║
+       ║   Disp(l)ay  |  Rando(m)   |   W)rite    |   R)ead     |   (E)dit   |   (D)elete  | (S)earch    ║
+       ║   Set R(o)ws |  (C)ommit   |   Res(t)ore |   Bac(k) up |   (H)elp   |   E(x)it                  ║ 
+       ║                                                                                                 ║ 
+       ╚═════════════════════════════════════════════════════════════════════════════════════════════════╝
+        """ + reset);
+        System.out.println(blue+ "☆".repeat(71) + reset);
     }
     public static void displayHelp(){
         Table table = new Table(1, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE, ShownBorders.SURROUND);
