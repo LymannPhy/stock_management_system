@@ -2,6 +2,7 @@ package view;
 
 import model.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
+import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
@@ -68,15 +69,16 @@ public class ProductView implements Color {
     public static void display(List<Product> product) {
         System.out.println("Products List as Table");
         Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
+        CellStyle cellStyle = new CellStyle(CellStyle.HorizontalAlign.center);
         table.setColumnWidth(0,15,20);
         table.setColumnWidth(1,15,20);
         table.setColumnWidth(2,15,20);
         table.setColumnWidth(3,15,20);
         table.setColumnWidth(4,15,20);
-        table.addCell("Code");
-        table.addCell("Name");
-        table.addCell("Price");
-        table.addCell("QTY");
+        table.addCell("Code",cellStyle);
+        table.addCell("Name",cellStyle);
+        table.addCell("Price",cellStyle);
+        table.addCell("QTY",cellStyle);
         table.addCell("Imported At");
 
         pageSize = (int) Math.ceil((double) product.size() / rowPerPage);
@@ -85,11 +87,11 @@ public class ProductView implements Color {
         System.out.println("Total Page : " + pageSize);
 
         for (int i = startIndex; i < endIndex; i++) {
-            table.addCell(product.get(i).getCode());
-            table.addCell(product.get(i).getName());
-            table.addCell(product.get(i).getPrice().toString());
-            table.addCell(product.get(i).getQty().toString());
-            table.addCell(product.get(i).getImported_at());
+            table.addCell(product.get(i).getCode(),cellStyle);
+            table.addCell(product.get(i).getName(),cellStyle);
+            table.addCell(product.get(i).getPrice().toString(),cellStyle);
+            table.addCell(product.get(i).getQty().toString(),cellStyle);
+            table.addCell(product.get(i).getImported_at(),cellStyle);
         }
         System.out.println(table.render());
         System.out.println("+" + "~".repeat(89) + "+");
@@ -113,7 +115,7 @@ public class ProductView implements Color {
         System.out.println("#️⃣".repeat(15));
     }
 
-    public void randomDisplay(List<Product> product){
+    /*public void randomDisplay(List<Product> product){
         System.out.println("Products List as Table");
         Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
         table.setColumnWidth(0,15,20);
@@ -145,7 +147,7 @@ public class ProductView implements Color {
         System.out.println(" Page Navigation" + " ".repeat(25) + "(F).First (P).Previous (G).Goto (N).Next (L).Last");
         System.out.println("+" + "~".repeat(89) + "+");
 
-    }
+    }*/
 
 
         // Method to display product details
