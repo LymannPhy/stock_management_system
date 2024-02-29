@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class Main {
     static ProductView view = new ProductView();
     static Scanner scanner = new Scanner(System.in);
