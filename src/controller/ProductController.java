@@ -223,33 +223,60 @@ public class ProductController implements Color {
     }
 
     public void randomRead(String filename) {
-        // Reset the file pointer by closing and reopening the file in read mode
+        // Reset the collections
         products.clear();
         usedProductCodes.clear();
+
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String line;
             long startTime = System.nanoTime();
-            int i=0;
-            while ((line = reader.readLine()) != null) {
-                Product product = parseProductLine(line);
-                if (product != null) {
+            List<Future<List<Product>>> futures = new ArrayList<>();
+            int linesPerTask = 1000; // Adjust this value based on your file size and system resources
+            int lineNumber = 0;
+
+            while (true) {
+                List<String> lines = new ArrayList<>();
+                for (int i = 0; i < linesPerTask; i++) {
+                    String line = reader.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    lines.add(line);
+                }
+                if (lines.isEmpty()) {
+                    break;
+                }
+                lineNumber += lines.size();
+                Future<List<Product>> future = executorService.submit(() -> parseLines(lines));
+                futures.add(future);
+            }
+
+            // Retrieve results from futures
+            for (Future<List<Product>> future : futures) {
+                List<Product> result = future.get();
+                for (Product product : result) {
                     products.add(product);
                     usedProductCodes.add(product.getCode());
                 }
-                i+=1;
-                if ((amountProduct > 10000) && (i + 1) % (amountProduct / 10) == 0 || i == amountProduct - 1) {
-                    int progress = ((i + 1) * 100) / amountProduct;
-                    System.out.print("\rLoading[" + progress + "%]");
-                }
             }
+
             long endTime = System.nanoTime();
-            long resultTime = endTime - startTime;
-            System.out.println("\rRead products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
-        } catch (IOException e) {
+            double elapsedTimeSeconds = (endTime - startTime) / 1_000_000_000.0;
+            System.out.println("Read products spent: " + elapsedTimeSeconds + " seconds.");
+        } catch (IOException | InterruptedException | ExecutionException e) {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
     }
 
+    private List<Product> parseLines(List<String> lines) {
+        List<Product> parsedProducts = new ArrayList<>();
+        for (String line : lines) {
+            Product product = parseProductLine(line);
+            if (product != null) {
+                parsedProducts.add(product);
+            }
+        }
+        return parsedProducts;
+    }
 
     // Load next product number from file or database
     private int loadNextProductNumber() {
