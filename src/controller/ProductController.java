@@ -10,6 +10,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 import static model.Product.parseProductLine;
@@ -24,6 +29,9 @@ public class ProductController implements Color {
     static int amountProduct;
     Scanner input = new Scanner(System.in);
     private boolean changesCommitted;
+
+    private static final int THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
     public ProductController(List<Product> products) {
         this.products = products;
         this.usedProductCodes = new HashSet<>();
@@ -138,35 +146,58 @@ public class ProductController implements Color {
         scanner.nextLine();
         String save = scanner.nextLine();
         if (Objects.equals(save, "y")) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat", true))) {
-                long startTime = System.nanoTime(); // Start time
-                int i = 0;
-                int lastProductNumber = getLastProductNumber(); // Get the last product number from the transaction file
-                while (i < amount) {
-                    String productCode = "CSTAD-" + (lastProductNumber + i + 1); // Generate product code
-                    // Create new product only if the code is not already used
-                    if (!usedProductCodes.contains(productCode)) {
-                        Product newProduct = new Product(productCode, "P" + (lastProductNumber + i + 1), 10.00d, 10, LocalDate.now().toString());
-                        String serializedProduct = serializeProduct(newProduct);
-                        writer.write(serializedProduct);
-                        writer.newLine();
-                        usedProductCodes.add(productCode); // Add the code to the used codes set
-                        if ((amount > 10000) && (i + 1) % (amount / 10) == 0 || i == amount - 1) {
-                            int progress = ((i + 1) * 100) / amount;
-                            System.out.print("\rLoading[" + progress + "%]");
+            long startTime = System.nanoTime(); // Start time
+            AtomicInteger generatedCount = new AtomicInteger(0);
+            int lastProductNumber = getLastProductNumber(); // Get the last product number from the transaction file
+
+            List<Future<?>> futures = new ArrayList<>();
+            for (int i = 0; i < THREAD_POOL_SIZE; i++) {
+                futures.add(executorService.submit(() -> {
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat", true))) {
+                        while (true) {
+                            int currentCount = generatedCount.getAndIncrement();
+                            if (currentCount >= amount) {
+                                break;
+                            }
+
+                            String productCode = "CSTAD-" + (lastProductNumber + currentCount + 1); // Generate product code
+                            // Create new product only if the code is not already used
+                            if (!usedProductCodes.contains(productCode)) {
+                                Product newProduct = new Product(productCode, "P" + (lastProductNumber + currentCount + 1), 10.00d, 10, LocalDate.now().toString());
+                                String serializedProduct = serializeProduct(newProduct);
+                                synchronized (writer) {
+                                    writer.write(serializedProduct);
+                                    writer.newLine();
+                                }
+                                usedProductCodes.add(productCode); // Add the code to the used codes set
+                                if ((amount > 10000) && (currentCount + 1) % (amount / 10) == 0 || currentCount == amount - 1) {
+                                    int progress = ((currentCount + 1) * 100) / amount;
+                                    System.out.print("\rLoading[" + progress + "%]");
+                                }
+                            }
                         }
-                        i++;
+                    } catch (IOException e) {
+                        System.err.println("Error writing to transaction file: " + e.getMessage());
                     }
-                }
-                System.out.println("\r"+amount + " Products created successfully.");
-                long endTime = System.nanoTime(); // End time
-                long resultTime = endTime - startTime;
-                System.out.println("Writing " + amount + " products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
-            } catch (IOException e) {
-                System.err.println("Error writing to transaction file: " + e.getMessage());
+                }));
             }
+
+            // Wait for all threads to complete
+            for (Future<?> future : futures) {
+                try {
+                    future.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            System.out.println("\r" + amount + " Products created successfully.");
+            long endTime = System.nanoTime(); // End time
+            long resultTime = endTime - startTime;
+            System.out.println("Writing " + amount + " products spent: " + (resultTime / 1_000_000_000.0) + " seconds.");
         }
     }
+
 
     // Helper method to get the last product number from the transaction file
     private int getLastProductNumber() {
