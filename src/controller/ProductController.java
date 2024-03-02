@@ -41,25 +41,6 @@ public class ProductController implements Color {
                 \t\t\t\t\t ║ \t\t██║     ╚════██║   ██║   ██╔══██║██║  ██║         ║
                 \t\t\t\t\t ║ \t\t╚██████╗███████║   ██║   ██║  ██║██████╔╝         ║
                 \t\t\t\t\t ║ \t\t ╚═════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═════╝          ║
-                \t\t\t\t\t ║ \t\t\t Center of Science Technology and             ║
-                \t\t\t\t\t ║ \t\t\t\t Advanced Development                     ║
-                \t\t\t\t\t ║ \t\t☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆        ║
-                \t\t\t\t\t ║ \t\t\t\t\t Stock Manager                        ║
-                \t\t\t\t\t ║ \t\t☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆        ║
-                \t\t\t\t\t ╚════════════════════════════════════════════════════════╝
-                """;
-        System.out.println("\n"+ yellow +logo + reset);
-    }
-
-    public void logo(){
-        String logo = """
-                \t\t\t\t\t ╔════════════════════════════════════════════════════════╗
-                \t\t\t\t\t ║ \t\t ██████╗███████╗████████╗ █████╗ ██████╗          ║
-                \t\t\t\t\t ║ \t\t██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗         ║
-                \t\t\t\t\t ║ \t\t██║     ███████╗   ██║   ███████║██║  ██║         ║
-                \t\t\t\t\t ║ \t\t██║     ╚════██║   ██║   ██╔══██║██║  ██║         ║
-                \t\t\t\t\t ║ \t\t╚██████╗███████║   ██║   ██║  ██║██████╔╝         ║
-                \t\t\t\t\t ║ \t\t ╚═════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═════╝          ║
                 \t\t\t\t\t ║ \t\t\t Center Science Technology and                ║
                 \t\t\t\t\t ║ \t\t\t\t Advanced Development                     ║
                 \t\t\t\t\t ║ \t\t☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆        ║
@@ -126,7 +107,7 @@ public class ProductController implements Color {
         System.out.println();
     }
 
-    public void index(){
+    /*public void index(){
         products.clear();
         usedProductCodes.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
@@ -154,7 +135,7 @@ public class ProductController implements Color {
                         System.out.print("\r████████"+reset+blue+"██"+reset);
                         count=1;
                     }*/
-                    count++;
+                    /*count++;
                     i++;
                 }
             }
@@ -165,7 +146,7 @@ public class ProductController implements Color {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
         System.out.println();
-    }
+    }*/
 
     public void loading(){
         for (int i = 0; i <= 100; i+=2) {
@@ -675,14 +656,6 @@ public class ProductController implements Color {
             } else {
                 System.out.println("❗You didn't backup data....!");
             }
-        //System.out.println("You have uncommitted transactions.");
-        System.out.print("Do you want back up data?[Y/n]: ");
-        String decision = input.nextLine().trim().toLowerCase();
-        if (decision.equals("y")) {
-            backupData();
-        } else {
-            System.out.println("You didn't backup data....!");
         }
     }
-
 }

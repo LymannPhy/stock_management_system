@@ -34,36 +34,22 @@ public class Main {
                     view.displayProducts(products);
                 }
                 case "m" -> {
-                    while (true){
-                        System.out.println("#️⃣ Menu of random #️⃣");
-                        System.out.println("1️⃣ Write");
-                        System.out.println("2️⃣ Read");
-                        System.out.println("3️⃣ Back to main menu");
-                        System.out.print("➡️ Choose option : ");
-                        int op = scanner.nextInt();
-                        switch (op){
-                            case 1 -> controller.randomWrite();
-                            case 2 -> {
-                                controller.randomRead("data/product.dat");
-                                view.displayProducts(products);
-                            }
-                            case 3 -> {
-                                System.out.println("⬅️ Back to menu");
-                                continue aa;
-                        System.out.println("1. Write");
-                        System.out.println("2. Read");
-                        System.out.println("3. Back");
-                        System.out.print("Choose : ");
+                    while (true) {
                         try {
+                            System.out.println("#️⃣ Menu of random #️⃣");
+                            System.out.println("1️⃣ Write");
+                            System.out.println("2️⃣ Read");
+                            System.out.println("3️⃣ Back to main menu");
+                            System.out.print("➡️ Choose option : ");
                             int op = scanner.nextInt();
                             switch (op) {
                                 case 1 -> controller.randomWrite();
                                 case 2 -> {
-                                    controller.randomRead("data/transaction.dat");
+                                    controller.randomRead("data/product.dat");
                                     view.displayProducts(products);
                                 }
                                 case 3 -> {
-                                    System.out.println("Back to menu");
+                                    System.out.println("⬅️ Back to menu");
                                     continue aa;
                                 }
                                 default -> System.out.println("Invalid choice, please enter a number between 1 and 3");
@@ -74,7 +60,7 @@ public class Main {
                         }
                     }
                 }
-                case "cl" -> ProductController.clear();
+                //case "cl" -> ProductController.clear();
                 case "w" -> {
                     // Create new product
                     controller.createProduct();
@@ -84,20 +70,19 @@ public class Main {
                     String productCode = scanner.nextLine().trim();
                     Product product = controller.getProductDetailByCode(productCode);
                     ProductView view = new ProductView();
-                    view.displayProductDetails(product);
+                    //view.displayProductDetails(product);
                 }
                 case "e" -> {
                     System.out.print("➡️ Enter Product Code: ");
                     String productCode = scanner.nextLine().trim();
                     Product product = controller.getProductDetailByCode(productCode);
                     ProductView view = new ProductView();
-                    view.displayProductDetails(product);
+                    //view.displayProductDetails(product);
                     if (product == null) {
                         break;
                     } else {
                         controller.editProduct(productCode);
                     }
-
                 }
                 case "d" -> {
                     System.out.print("➡️ Enter product code to delete: ");
@@ -140,13 +125,9 @@ public class Main {
                         System.out.print("❓ Do you want to save or lose data?[Y/n]: ");
                         String decision = scanner.nextLine().trim().toLowerCase();
                         if (decision.equals("y")) {
-                case "x", "X" -> {
-                    if (!controller.areChangesCommitted()) {
-                        System.out.println("Changes have not been committed yet.");
-                        System.out.print("Do you want to commit changes before exiting?[Y/n]: ");
-                        String commitDecision = scanner.nextLine().trim().toLowerCase();
-                        if (commitDecision.equals("y")) {
                             controller.commitChanges();
+                        } else {
+                            System.out.println("Exiting the program without saving data.");
                         }
                     }
                     System.out.println("\uD83D\uDD1A Exiting the program.");
