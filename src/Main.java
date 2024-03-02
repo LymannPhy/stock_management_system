@@ -4,12 +4,17 @@ import view.MenuView;
 import view.ProductView;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+
+import static view.Color.reset;
+import static view.Color.yellow;
 
 public class Main {
     static ProductView view = new ProductView();
     static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
         List<Product> products = new ArrayList<>();
         // Pass the list of products to the ProductController constructor
@@ -45,7 +50,27 @@ public class Main {
                             case 3 -> {
                                 System.out.println("⬅️ Back to menu");
                                 continue aa;
+                        System.out.println("1. Write");
+                        System.out.println("2. Read");
+                        System.out.println("3. Back");
+                        System.out.print("Choose : ");
+                        try {
+                            int op = scanner.nextInt();
+                            switch (op) {
+                                case 1 -> controller.randomWrite();
+                                case 2 -> {
+                                    controller.randomRead("data/transaction.dat");
+                                    view.displayProducts(products);
+                                }
+                                case 3 -> {
+                                    System.out.println("Back to menu");
+                                    continue aa;
+                                }
+                                default -> System.out.println("Invalid choice, please enter a number between 1 and 3");
                             }
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                            scanner.next(); // Clear the invalid input from the scanner
                         }
                     }
                 }
@@ -115,9 +140,13 @@ public class Main {
                         System.out.print("❓ Do you want to save or lose data?[Y/n]: ");
                         String decision = scanner.nextLine().trim().toLowerCase();
                         if (decision.equals("y")) {
+                case "x", "X" -> {
+                    if (!controller.areChangesCommitted()) {
+                        System.out.println("Changes have not been committed yet.");
+                        System.out.print("Do you want to commit changes before exiting?[Y/n]: ");
+                        String commitDecision = scanner.nextLine().trim().toLowerCase();
+                        if (commitDecision.equals("y")) {
                             controller.commitChanges();
-                        } else {
-                            System.out.println("Exiting the program without saving data.");
                         }
                     }
                     System.out.println("\uD83D\uDD1A Exiting the program.");

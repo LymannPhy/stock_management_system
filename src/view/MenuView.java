@@ -8,8 +8,8 @@ public class MenuView implements Color {
     // Method to display the menu
     public static void displayMenu() {
         //System.out.println(blue+ " ".repeat(35) +"➡\uFE0F Application Menu ⬅\uFE0F" + reset);
-        System.out.println(blue+ "☆".repeat(71) + reset);
-        System.out.print(magenta + """ 
+        System.out.println(black+ "☆".repeat(71) + reset);
+        System.out.print(black + """ 
        ╔═════════════════════════════════════════════════════════════════════════════════════════════════╗
        ║                                    Application Menu                                             ║
        ║─────────────────────────────────────────────────────────────────────────────────────────────────║
@@ -18,7 +18,7 @@ public class MenuView implements Color {
        ║                                                                                                 ║ 
        ╚═════════════════════════════════════════════════════════════════════════════════════════════════╝
         """ + reset);
-        System.out.println(blue+ "☆".repeat(71) + reset);
+        System.out.println(black+ "☆".repeat(71) + reset);
     }
     public static void displayHelp(){
         Table table = new Table(1, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE, ShownBorders.SURROUND);

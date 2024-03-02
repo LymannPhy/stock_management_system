@@ -5,20 +5,12 @@ import view.Color;
 import view.ProductView;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.io.IOException;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 import static model.Product.parseProductLine;
 
@@ -31,11 +23,32 @@ public class ProductController implements Color {
     private static volatile boolean isLoading = true;
     static int amountProduct;
     Scanner input = new Scanner(System.in);
-
+    private boolean changesCommitted;
     public ProductController(List<Product> products) {
         this.products = products;
         this.usedProductCodes = new HashSet<>();
-        this.nextProductNumber = loadNextProductNumber(); // Load from file or database
+        this.nextProductNumber = loadNextProductNumber();
+        this.changesCommitted = false;
+
+    }
+
+    public void logo(){
+        String logo = """
+                \t\t\t\t\t ╔════════════════════════════════════════════════════════╗
+                \t\t\t\t\t ║ \t\t ██████╗███████╗████████╗ █████╗ ██████╗          ║
+                \t\t\t\t\t ║ \t\t██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗         ║
+                \t\t\t\t\t ║ \t\t██║     ███████╗   ██║   ███████║██║  ██║         ║
+                \t\t\t\t\t ║ \t\t██║     ╚════██║   ██║   ██╔══██║██║  ██║         ║
+                \t\t\t\t\t ║ \t\t╚██████╗███████║   ██║   ██║  ██║██████╔╝         ║
+                \t\t\t\t\t ║ \t\t ╚═════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═════╝          ║
+                \t\t\t\t\t ║ \t\t\t Center of Science Technology and             ║
+                \t\t\t\t\t ║ \t\t\t\t Advanced Development                     ║
+                \t\t\t\t\t ║ \t\t☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆        ║
+                \t\t\t\t\t ║ \t\t\t\t\t Stock Manager                        ║
+                \t\t\t\t\t ║ \t\t☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆        ║
+                \t\t\t\t\t ╚════════════════════════════════════════════════════════╝
+                """;
+        System.out.println("\n"+ yellow +logo + reset);
     }
 
     public void logo(){
@@ -100,6 +113,38 @@ public class ProductController implements Color {
                         System.out.print("\rData is Loading .....|\\\"");
                         count=1;
                     }
+                    count++;
+                    i++;
+                }
+            }
+            long endTime = System.nanoTime(); // End time
+            long resultTime = endTime - startTime;
+            System.out.println(reset+"\r♨️ Loading spend: " + (resultTime /  1_000_000_000.0) + " seconds.");
+        } catch (IOException e) {
+            System.err.println("Error reading data from file: " + e.getMessage());
+        }
+        System.out.println();
+    }
+
+    public void index(){
+        products.clear();
+        usedProductCodes.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
+            String line;
+            int i=0;
+            int count = 1;
+            System.out.print("Loading : "+green);
+            long startTime = System.nanoTime();
+            while ((line = reader.readLine()) != null) {
+                Product product = parseProductLine(line);
+                if (product != null) {
+                    products.add(product);
+                    usedProductCodes.add(product.getCode());
+                    if (count == 100) System.out.print("\r♨️ Data is Loading ...../|");
+                    if (count == 400) {
+                        System.out.print("\rData is Loading .....|\\\"");
+                        count=1;
+                    }
 
                     /*if (count == 100) System.out.print(blue+ "\r██"+ reset + red + "██████████");
                     if (count == 200) System.out.print("\r██"+reset + blue + "██"+reset + blue +"██████");
@@ -143,6 +188,7 @@ public class ProductController implements Color {
         return green + progressBar;
     }
 
+
     // choice 1
     public void randomWrite() {
         System.out.print("➡️ Enter random amount = ");
@@ -155,16 +201,22 @@ public class ProductController implements Color {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat",true))) {
                 long startTime = System.nanoTime(); // Start time
                 int i = 0;
+                int lastProductNumber = getLastProductNumber(); // Get the last product number from the transaction file
                 while (i < amount) {
-                    Product newProduct = new Product("CSTAD-" + (i +   1), "P" + (i +  1), 10.00d, 10, LocalDate.now().toString());
-                    String serializedProduct = serializeProduct(newProduct);
-                    writer.write(serializedProduct);
-                    writer.newLine();
-                    if ( (amount > 10000) && (i + 1) % (amount / 10) == 0 || i == amount - 1) {
-                        int progress = ((i + 1) * 100) / amount;
-                        System.out.print("\rLoading[" + progress + "%]");
+                    String productCode = "CSTAD-" + (lastProductNumber + i + 1); // Generate product code
+                    // Create new product only if the code is not already used
+                    if (!usedProductCodes.contains(productCode)) {
+                        Product newProduct = new Product(productCode, "P" + (lastProductNumber + i + 1), 10.00d, 10, LocalDate.now().toString());
+                        String serializedProduct = serializeProduct(newProduct);
+                        writer.write(serializedProduct);
+                        writer.newLine();
+                        usedProductCodes.add(productCode); // Add the code to the used codes set
+                        if ((amount > 10000) && (i + 1) % (amount / 10) == 0 || i == amount - 1) {
+                            int progress = ((i + 1) * 100) / amount;
+                            System.out.print("\rLoading[" + progress + "%]");
+                        }
+                        i++;
                     }
-                    i++;
                 }
                 System.out.println("\r"+amount + " ✅ Products created successfully.");
                 long endTime = System.nanoTime(); // End time
@@ -176,19 +228,31 @@ public class ProductController implements Color {
         }
     }
 
-    public static void clear(){
-        String filePath = "data/product.dat";
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            writer.write("");
-            System.out.println("✅ Space written to file successfully.");
+    // Helper method to get the last product number from the transaction file
+    private int getLastProductNumber() {
+        int lastProductNumber = 0;
+        try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length > 0) {
+                    String code = parts[0];
+                    if (!code.isEmpty()) { // Check if the code is not empty
+                        int number = Integer.parseInt(code.substring(code.lastIndexOf("-") + 1));
+                        if (number > lastProductNumber) {
+                            lastProductNumber = number;
+                        }
+                    }
+                }
+            }
         } catch (IOException e) {
-            System.err.println("An error occurred while writing to the file.");
-            e.printStackTrace();
+            System.err.println("Error reading data from file: " + e.getMessage());
         }
+        return lastProductNumber;
     }
 
-
-    public void randomRead(String filename){
+    public void randomRead(String filename) {
+        // Reset the file pointer by closing and reopening the file in read mode
         products.clear();
         usedProductCodes.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
@@ -231,17 +295,33 @@ public class ProductController implements Color {
 
     private String generateProductCode() {
         String codePrefix = "CSTAD-";
-        int productNumber = nextProductNumber++;
-        saveNextProductNumber();
+        int lastProductNumberFromTransactionFile = getLastProductNumber();
+        int lastProductNumberFromRandomWrite = getLastProductNumberFromRandomWrite();
+        int productNumber = Math.max(lastProductNumberFromTransactionFile, lastProductNumberFromRandomWrite) + 1;
         return codePrefix + productNumber;
     }
 
-    private void saveNextProductNumber() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product_number.txt"))) {
-            writer.write(String.valueOf(nextProductNumber));
+    // Helper method to get the last product number generated by randomWrite method
+    private int getLastProductNumberFromRandomWrite() {
+        int lastProductNumberFromRandomWrite = 0;
+        try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length > 0) {
+                    String code = parts[0];
+                    if (code.startsWith("CSTAD-")) {
+                        int number = Integer.parseInt(code.substring(code.lastIndexOf("-") + 1));
+                        if (number > lastProductNumberFromRandomWrite) {
+                            lastProductNumberFromRandomWrite = number;
+                        }
+                    }
+                }
+            }
         } catch (IOException e) {
-            System.err.println("Error writing product number to file: " + e.getMessage());
+            System.err.println("Error reading data from file: " + e.getMessage());
         }
+        return lastProductNumberFromRandomWrite;
     }
 
     public void createProduct() {
@@ -288,24 +368,6 @@ public class ProductController implements Color {
         }
     }
 
-    public void readTransactionDataFromFile() {
-        products.clear();
-        usedProductCodes.clear();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Product product = parseProductLine(line);
-                if (product != null) {
-                    products.add(product);
-                    usedProductCodes.add(product.getCode());
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading transaction data from file: " + e.getMessage());
-        }
-    }
-
     public Product getProductDetailByCode(String code) {
         for (Product product : products) {
             if (product.getCode().equalsIgnoreCase(code)) {
@@ -315,16 +377,16 @@ public class ProductController implements Color {
         return null;
     }
 
-    public List<Product> getProducts() {
-        return products;
-    }
-
     public boolean hasUncommittedTransactions() {
         File file = new File("data/transaction.dat");
         return file.exists() && file.length() > 0;
     }
 
     public void commitChanges() {
+        if (!hasUncommittedTransactions()) {
+            System.out.println("No uncommitted transactions to commit.");
+            return;
+        }
         try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
              BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
             String line;
@@ -333,18 +395,14 @@ public class ProductController implements Color {
                 writer.newLine();
             }
             System.out.println("✅ Changes committed successfully!");
+            System.out.println("Changes committed successfully!");
+            this.changesCommitted = true; // Set the flag indicating changes have been committed
         } catch (IOException e) {
             System.err.println("Error committing changes: " + e.getMessage());
         }
     }
-
-    public boolean isTransactionEmpty() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"))) {
-            return reader.readLine() == null;
-        } catch (IOException e) {
-            System.err.println("Error checking transaction file: " + e.getMessage());
-            return false;
-        }
+    public boolean areChangesCommitted() {
+        return this.changesCommitted;
     }
 
     public List<Product> searchProductByName(String name) {
@@ -531,8 +589,15 @@ public class ProductController implements Color {
 
         System.out.print("➡\uFE0F Enter the number of the backup file to restore: ");
         Scanner scanner = new Scanner(System.in);
-        int choice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline character
+        int choice;
+        try {
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline character
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            scanner.nextLine(); // Consume invalid input
+            return;
+        }
         if (choice < 1 || choice > backupFiles.length) {
             System.out.println("⚠\uFE0F Invalid choice.");
             return;
@@ -579,7 +644,6 @@ public class ProductController implements Color {
         }
     }
 
-
     // Method to backup product data to a file
     public void backupData() {
         LocalDateTime now = LocalDateTime.now();
@@ -611,6 +675,13 @@ public class ProductController implements Color {
             } else {
                 System.out.println("❗You didn't backup data....!");
             }
+        //System.out.println("You have uncommitted transactions.");
+        System.out.print("Do you want back up data?[Y/n]: ");
+        String decision = input.nextLine().trim().toLowerCase();
+        if (decision.equals("y")) {
+            backupData();
+        } else {
+            System.out.println("You didn't backup data....!");
         }
     }
 
