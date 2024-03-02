@@ -138,67 +138,46 @@ public class ProductController implements Color {
 
 
     // choice 1
+    // choice 1
     public void randomWrite() {
-        System.out.print("> Enter random amount = ");
+        System.out.print("➡️ Enter random amount = ");
         int amount = scanner.nextInt();
         amountProduct = amount;
-        System.out.print("> Are you sure to random " + amount + " products? [y/n]: ");
+        System.out.print("\uD83E\uDD14 Are you sure to random " + amount + " products? [y/n]: ");
         scanner.nextLine();
         String save = scanner.nextLine();
         if (Objects.equals(save, "y")) {
-            long startTime = System.nanoTime(); // Start time
-            AtomicInteger generatedCount = new AtomicInteger(0);
-            int lastProductNumber = getLastProductNumber(); // Get the last product number from the transaction file
-
-            List<Future<?>> futures = new ArrayList<>();
-            for (int i = 0; i < THREAD_POOL_SIZE; i++) {
-                futures.add(executorService.submit(() -> {
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat", true))) {
-                        while (true) {
-                            int currentCount = generatedCount.getAndIncrement();
-                            if (currentCount >= amount) {
-                                break;
-                            }
-
-                            String productCode = "CSTAD-" + (lastProductNumber + currentCount + 1); // Generate product code
-                            // Create new product only if the code is not already used
-                            if (!usedProductCodes.contains(productCode)) {
-                                Product newProduct = new Product(productCode, "P" + (lastProductNumber + currentCount + 1), 10.00d, 10, LocalDate.now().toString());
-                                String serializedProduct = serializeProduct(newProduct);
-                                synchronized (writer) {
-                                    writer.write(serializedProduct);
-                                    writer.newLine();
-                                }
-                                usedProductCodes.add(productCode); // Add the code to the used codes set
-                                if ((amount > 10000) && (currentCount + 1) % (amount / 10) == 0 || currentCount == amount - 1) {
-                                    int progress = ((currentCount + 1) * 100) / amount;
-                                    System.out.print("\rLoading[" + progress + "%]");
-                                }
-                            }
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat",true))) {
+                long startTime = System.nanoTime(); // Start time
+                int i = 0;
+                int lastProductNumber = getLastProductNumber(); // Get the last product number from the transaction file
+                while (i < amount) {
+                    String productCode = "CSTAD-" + (lastProductNumber + i + 1); // Generate product code
+                    // Create new product only if the code is not already used
+                    if (!usedProductCodes.contains(productCode)) {
+                        Product newProduct = new Product(productCode, "P" + (lastProductNumber + i + 1), 10.00d, 10, LocalDate.now().toString());
+                        String serializedProduct = serializeProduct(newProduct);
+                        writer.write(serializedProduct);
+                        writer.newLine();
+                        usedProductCodes.add(productCode); // Add the code to the used codes set
+                        if ((amount > 10000) && (i + 1) % (amount / 10) == 0 || i == amount - 1) {
+                            int progress = ((i + 1) * 100) / amount;
+                            System.out.print("\rLoading[" + progress + "%]");
                         }
-                    } catch (IOException e) {
-                        System.err.println("Error writing to transaction file: " + e.getMessage());
+                        i++;
                     }
-                }));
-            }
-
-            // Wait for all threads to complete
-            for (Future<?> future : futures) {
-                try {
-                    future.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
                 }
+                System.out.println("\r"+amount + " ✅ Products created successfully.");
+                long endTime = System.nanoTime(); // End time
+                long resultTime = endTime - startTime;
+                System.out.println("\uD83D\uDCDD Write " + amount + " products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
+            } catch (IOException e) {
+                System.err.println("Error writing to transaction file: " + e.getMessage());
             }
-
-            System.out.println("\r" + amount + " Products created successfully.");
-            long endTime = System.nanoTime(); // End time
-            long resultTime = endTime - startTime;
-            System.out.println("Writing " + amount + " products spent: " + (resultTime / 1_000_000_000.0) + " seconds.");
         }
     }
 
-
+    // Helper method to get the last product number from the transaction file
     // Helper method to get the last product number from the transaction file
     private int getLastProductNumber() {
         int lastProductNumber = 0;
@@ -223,60 +202,33 @@ public class ProductController implements Color {
     }
 
     public void randomRead(String filename) {
-        // Reset the collections
+        // Reset the file pointer by closing and reopening the file in read mode
         products.clear();
         usedProductCodes.clear();
-
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
             long startTime = System.nanoTime();
-            List<Future<List<Product>>> futures = new ArrayList<>();
-            int linesPerTask = 1000; // Adjust this value based on your file size and system resources
-            int lineNumber = 0;
-
-            while (true) {
-                List<String> lines = new ArrayList<>();
-                for (int i = 0; i < linesPerTask; i++) {
-                    String line = reader.readLine();
-                    if (line == null) {
-                        break;
-                    }
-                    lines.add(line);
-                }
-                if (lines.isEmpty()) {
-                    break;
-                }
-                lineNumber += lines.size();
-                Future<List<Product>> future = executorService.submit(() -> parseLines(lines));
-                futures.add(future);
-            }
-
-            // Retrieve results from futures
-            for (Future<List<Product>> future : futures) {
-                List<Product> result = future.get();
-                for (Product product : result) {
+            int i=0;
+            while ((line = reader.readLine()) != null) {
+                Product product = parseProductLine(line);
+                if (product != null) {
                     products.add(product);
                     usedProductCodes.add(product.getCode());
                 }
+                i+=1;
+                if ((amountProduct > 10000) && (i + 1) % (amountProduct / 10) == 0 || i == amountProduct - 1) {
+                    int progress = ((i + 1) * 100) / amountProduct;
+                    System.out.print("\rLoading[" + progress + "%]");
+                }
             }
-
             long endTime = System.nanoTime();
-            double elapsedTimeSeconds = (endTime - startTime) / 1_000_000_000.0;
-            System.out.println("Read products spent: " + elapsedTimeSeconds + " seconds.");
-        } catch (IOException | InterruptedException | ExecutionException e) {
+            long resultTime = endTime - startTime;
+            System.out.println("\rRead products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
+        } catch (IOException e) {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
     }
 
-    private List<Product> parseLines(List<String> lines) {
-        List<Product> parsedProducts = new ArrayList<>();
-        for (String line : lines) {
-            Product product = parseProductLine(line);
-            if (product != null) {
-                parsedProducts.add(product);
-            }
-        }
-        return parsedProducts;
-    }
 
     // Load next product number from file or database
     private int loadNextProductNumber() {
