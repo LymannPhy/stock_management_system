@@ -338,7 +338,7 @@ public class ProductController implements Color {
 
             String serializedProduct = serializeProduct(newProduct);
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat", true))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat", true))) {
                 writer.write(serializedProduct + "\n");
                 System.out.println("✅ Product has been created successfully!");
             } catch (IOException e) {
