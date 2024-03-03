@@ -275,46 +275,50 @@ public class ProductController implements Color {
     }
 
     public void createProduct() {
-        Scanner scanner = new Scanner(System.in);
+        try {
+            Scanner scanner = new Scanner(System.in);
 
-        String code = generateProductCode();
+            String code = generateProductCode();
 
-        System.out.print("Enter product name: ");
-        String name = scanner.nextLine();
+            System.out.print("Enter product name: ");
+            String name = scanner.nextLine();
 
-        System.out.print("Enter product price: ");
-        double price = scanner.nextDouble();
+            System.out.print("Enter product price: ");
+            double price = scanner.nextDouble();
 
-        System.out.print("Enter product quantity: ");
-        int qty = scanner.nextInt();
+            System.out.print("Enter product quantity: ");
+            int qty = scanner.nextInt();
 
-        scanner.nextLine();
+            scanner.nextLine();
 
-        LocalDate importedAt = LocalDate.now();
-        String imported_at = importedAt.toString();
+            LocalDate importedAt = LocalDate.now();
+            String imported_at = importedAt.toString();
 
-        Product newProduct = new Product();
-        newProduct.setCode(code);
-        newProduct.setName(name);
-        newProduct.setPrice(price);
-        newProduct.setQty(qty);
-        newProduct.setImported_at(imported_at);
+            Product newProduct = new Product();
+            newProduct.setCode(code);
+            newProduct.setName(name);
+            newProduct.setPrice(price);
+            newProduct.setQty(qty);
+            newProduct.setImported_at(imported_at);
 
-        System.out.print("Are you sure to create a new product?[Y/n]: ");
-        String confirmation = scanner.nextLine().trim().toLowerCase();
-        if (confirmation.equals("y") || confirmation.equals("yes")) {
-            products.add(newProduct);
+            System.out.print("Are you sure to create a new product?[Y/n]: ");
+            String confirmation = scanner.nextLine().trim().toLowerCase();
+            if (confirmation.equals("y") || confirmation.equals("yes")) {
+                products.add(newProduct);
 
-            String serializedProduct = serializeProduct(newProduct);
+                String serializedProduct = serializeProduct(newProduct);
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat", true))) {
-                writer.write(serializedProduct + "\n");
-                System.out.println("Product has been created successfully!");
-            } catch (IOException e) {
-                System.err.println("Error writing to transaction file: " + e.getMessage());
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/transaction.dat", true))) {
+                    writer.write(serializedProduct + "\n");
+                    System.out.println("Product has been created successfully!");
+                } catch (IOException e) {
+                    System.err.println("Error writing to transaction file: " + e.getMessage());
+                }
+            } else {
+                System.out.println("Product creation cancelled.");
             }
-        } else {
-            System.out.println("Product creation cancelled.");
+        }catch (Exception e){
+            System.out.println("[!] Incorrect Input....");
         }
     }
 
@@ -367,39 +371,47 @@ public class ProductController implements Color {
 
     // Method to delete product by code from transaction file
     public void deleteProductByCode(String code) {
-        File transactionFile = new File("data/transaction.dat");
-        File tempFile = new File("data/temp.dat");
+        System.out.print("[+] Are you sure you want to delete this product [Y/N] :");
+        Scanner sc = new Scanner(System.in);
+        String answer = sc.next();
+        if (answer.equalsIgnoreCase("y")) {
+            File transactionFile = new File("data/transaction.dat");
+            File tempFile = new File("data/temp.dat");
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(transactionFile));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(transactionFile));
+                 BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Check if the line starts with the product code
-                if (!line.startsWith(code)) {
-                    // If not, write the line to the temporary file
-                    writer.write(line + System.lineSeparator());
-                    products.removeIf(p -> p.getCode().equalsIgnoreCase(code));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Check if the line starts with the product code
+                    if (!line.startsWith(code)) {
+                        // If not, write the line to the temporary file
+                        writer.write(line + System.lineSeparator());
+                        products.removeIf(p -> p.getCode().equalsIgnoreCase(code));
+                    }
                 }
+            } catch (IOException e) {
+                System.err.println("Error deleting product from transaction file: " + e.getMessage());
+                return;
             }
-        } catch (IOException e) {
-            System.err.println("Error deleting product from transaction file: " + e.getMessage());
-            return;
-        }
 
-        // Replace the original transaction file with the temporary file
-        try {
-            // Delete the original transaction file
-            if (!transactionFile.delete()) {
-                throw new IOException("Failed to delete original transaction file.");
+
+            // Replace the original transaction file with the temporary file
+            try {
+                // Delete the original transaction file
+                if (!transactionFile.delete()) {
+                    throw new IOException("Failed to delete original transaction file.");
+                }
+                // Rename the temporary file to replace the original transaction file
+                if (!tempFile.renameTo(transactionFile)) {
+                    throw new IOException("Failed to rename temporary file.");
+                }
+                System.out.println("Product deleted successfully.");
+            } catch (IOException e) {
+                System.err.println("Error replacing transaction file: " + e.getMessage());
             }
-            // Rename the temporary file to replace the original transaction file
-            if (!tempFile.renameTo(transactionFile)) {
-                throw new IOException("Failed to rename temporary file.");
-            }
-            System.out.println("Product deleted successfully.");
-        } catch (IOException e) {
-            System.err.println("Error replacing transaction file: " + e.getMessage());
+        }else if (answer.equalsIgnoreCase("n")){
+            System.out.println("[+] You didn't delete anything!!");
         }
     }
     public void editProduct(String code) {

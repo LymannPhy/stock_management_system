@@ -34,29 +34,35 @@ public class Main {
                     view.displayProducts(products);
                 }
                 case "m" -> {
-                    while (true){
-                        System.out.println("1. Write");
-                        System.out.println("2. Read");
-                        System.out.println("3. Back");
-                        System.out.print("Choose : ");
-                        try {
-                            int op = scanner.nextInt();
-                            switch (op) {
-                                case 1 -> controller.randomWrite();
-                                case 2 -> {
-                                    controller.randomRead("data/transaction.dat");
-                                    view.displayProducts(products);
+                    try {
+                        while (true) {
+                            System.out.println("1. Write");
+                            System.out.println("2. Read");
+                            System.out.println("3. Back");
+                            System.out.print("Choose : ");
+                            try {
+                                int op = scanner.nextInt();
+                                switch (op) {
+                                    case 1 -> controller.randomWrite();
+                                    case 2 -> {
+                                        controller.randomRead("data/product.dat");
+                                        view.displayProducts(products);
+                                    }
+                                    case 3 -> {
+                                        System.out.println("Back to menu");
+                                        continue aa;
+                                    }
+                                    default ->
+                                            System.out.println("Invalid choice, please enter a number between 1 and 3");
                                 }
-                                case 3 -> {
-                                    System.out.println("Back to menu");
-                                    continue aa;
-                                }
-                                default -> System.out.println("Invalid choice, please enter a number between 1 and 3");
+                            } catch (InputMismatchException e) {
+                                System.out.println("Invalid input. Please enter a number.");
+                                scanner.next(); // Clear the invalid input from the scanner
                             }
-                        } catch (InputMismatchException e) {
-                            System.out.println("Invalid input. Please enter a number.");
-                            scanner.next(); // Clear the invalid input from the scanner
                         }
+                    }
+                    catch(Error error) {
+                        System.out.println(error.getMessage());
                     }
                 }
                 //case "cl" -> ProductController.clearFile();
@@ -71,7 +77,7 @@ public class Main {
                     ProductView view = new ProductView();
                     view.displayProductDetails(product);
                 }
-                case "e", "E" -> {
+                case "e" -> {
                     System.out.print("Enter Product Code: ");
                     String productCode = scanner.nextLine().trim();
                     Product product = controller.getProductDetailByCode(productCode);
@@ -84,12 +90,20 @@ public class Main {
                     }
 
                 }
-                case "d", "D" -> {
+                case "d"-> {
                     System.out.print("Enter product code to delete: ");
                     String productCode = scanner.nextLine().trim();
-                    controller.deleteProductByCode(productCode);
+                    Product product = controller.getProductDetailByCode(productCode);
+                    ProductView view = new ProductView();
+                    view.displayProductDetails(product);
+                    if (product == null) {
+                        break;
+                    } else {
+                        controller.deleteProductByCode(productCode);
+                    }
+
                 }
-                case "s", "S" -> {
+                case "s"-> {
                     System.out.print("Enter product name to search: ");
                     String searchTerm = scanner.nextLine().trim();
                     List<Product> searchResults = controller.searchProductByName(searchTerm);
@@ -101,25 +115,24 @@ public class Main {
                     }
                     break;
                 }
-                case "o", "O" -> view.setRow();
-                case "c", "C" -> {
+                case "o" -> view.setRow();
+                case "c"-> {
                     // Commit changes
                     controller.commitChanges();
                 }
-                case "b", "B" -> System.out.println("Backup option chosen");
-                case "k", "K" -> {
+                case "b"-> System.out.println("Backup option chosen");
+                case "k" -> {
                     controller.handleBackupDecision();
                 }
-                case "t", "T" -> {
+                case "t" -> {
                     System.out.println("Restore option chosen");
                     controller.restoreData();
                     dataRestored = true;
                 }
-                case "h", "H" -> {
-                    MenuView help = new MenuView();
-                    help.displayHelp();
+                case "h" -> {
+                    MenuView.displayHelp();
                 }
-                case "x", "X" -> {
+                case "x"-> {
                     if (!controller.areChangesCommitted()) {
                         System.out.println("Changes have not been committed yet.");
                         System.out.print("Do you want to commit changes before exiting?[Y/n]: ");

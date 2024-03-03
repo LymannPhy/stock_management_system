@@ -17,31 +17,35 @@ public class ProductView implements Color {
 
     public void displayProducts(List<Product> products) {
         while (true) {
-            display(products);
-            System.out.print("(B).Back or to Navigate page: ");
-            String page = scanner.nextLine();
-            if(Objects.equals(page, "b")) return;
-            switch (page.toLowerCase()){
-                case "f" -> {
-                    currentPage=1;
+            try {
+                display(products);
+                System.out.print("(B).Back or to Navigate page: ");
+                String page = scanner.nextLine();
+                if (Objects.equals(page, "b")) return;
+                switch (page.toLowerCase()) {
+                    case "f" -> {
+                        currentPage = 1;
+                    }
+                    case "p" -> {
+                        currentPage -= 1;
+                    }
+                    case "g" -> {
+                        System.out.print("Enter numberPage to navigate = ");
+                        Integer pageInput = scanner.nextInt();
+                        currentPage = pageInput;
+                    }
+                    case "n" -> {
+                        currentPage += 1;
+                    }
+                    case "l" -> {
+                        currentPage = pageSize;
+                    }
+                    default -> {
+                        System.out.println("Invalidate option...!");
+                    }
                 }
-                case "p" -> {
-                    currentPage-=1;
-                }
-                case "g" -> {
-                    System.out.print("Enter numberPage to navigate = ");
-                    Integer pageInput = scanner.nextInt();
-                    currentPage = pageInput;
-                }
-                case "n" -> {
-                    currentPage+=1;
-                }
-                case "l" -> {
-                    currentPage = pageSize;
-                }
-                default -> {
-                    System.out.println("Invalidate option...!");
-                }
+            } catch (Exception e) {
+                System.out.println("[!] Invalid Input...");
             }
         }
     }
