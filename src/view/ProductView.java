@@ -13,6 +13,8 @@ public class ProductView implements Color {
     static Integer pageSize = 1;
     static Integer rowPerPage = 4;
 
+
+
     Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
 
     public void displayProducts(List<Product> products) {
@@ -79,6 +81,10 @@ public class ProductView implements Color {
             System.out.println(" Page " + currentPage + " of " + pageSize + " ".repeat(58) + "Total Record: " + product.size());
             System.out.println(" Page Navigation" + " ".repeat(25) + "(F).First (P).Previous (G).Goto (N).Next (L).Last");
             System.out.println("+" + "~".repeat(89) + "+");
+            /*for(Product product1 : product){
+                System.out.println(product1);
+            }
+            System.out.println(product.size());*/
         } catch (IndexOutOfBoundsException e) {
             System.out.println("No records to display.");
         }
