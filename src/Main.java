@@ -46,7 +46,10 @@ public class Main {
                             try {
                                 int op = scanner.nextInt();
                                 switch (op) {
-                                    case 1 -> controller.randomWrite();
+                                    case 1 -> {
+                                        controller.randomWrite();
+                                        controller.writeToList();
+                                    }
                                     case 2 -> {
                                         controller.randomRead("data/product.dat");
                                         view.displayProducts(products);

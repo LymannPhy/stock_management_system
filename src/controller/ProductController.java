@@ -21,7 +21,7 @@ import static model.Product.parseProductLine;
 
 public class ProductController implements Color {
     private static List<Product> products;
-    private HashSet<String> usedProductCodes;
+    private static HashSet<String> usedProductCodes;
     static Scanner scanner = new Scanner(System.in);
     private ProductView view = new ProductView();
     private int nextProductNumber;
@@ -29,6 +29,8 @@ public class ProductController implements Color {
     static int amountProduct;
     Scanner input = new Scanner(System.in);
     private boolean changesCommitted;
+    private boolean delete;
+
 
     private static final int THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors();
     private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
@@ -77,6 +79,22 @@ public class ProductController implements Color {
         else System.out.println("⚠️ no file...!");
     }
 
+    public void writeToList(){
+        products.clear();
+        usedProductCodes.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Product product = parseProductLine(line);
+                if (product != null) {
+                    products.add(product);
+                    usedProductCodes.add(product.getCode());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading data from file: " + e.getMessage());
+        }
+    }
 
 
     public void randomWrite() {
@@ -311,10 +329,51 @@ public class ProductController implements Color {
         return file.exists() && file.length() > 0;
     }
 
+    /*public void deleteProductByCode(String code){
+        System.out.println("[#] Are you sure you want to delete this product's ??? [Y/N]: ");
+        String answer = new Scanner(System.in).next();
+        if (answer.equalsIgnoreCase("y")) {
+            for (int i = 0; i < products.size(); i++) {
+                // Get the product at the current index
+                Product product = products.get(i);
+
+                // Check if the code of the current product matches the given code
+                if (product.getCode().equals(code)) {
+                    // Remove the product from the list
+                    products.remove(i);
+                    // Decrement the index as the size of the list has decreased
+                    i--;
+                    writeProductsToFile();
+                    delete=true;
+                    break;
+                }
+            }
+        }else if (answer.equalsIgnoreCase("n")){
+            System.out.println("[#] You didn't delete anything.....");
+            delete=false;
+        }
+    }*/
+
+
+
     public void commitChanges() {
+        if (delete){
+            try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
+                 BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+                System.out.println(blue+"✅ Changes committed successfully!"+reset);
+                this.changesCommitted = true; // Set the flag indicating changes have been committed
+            } catch (IOException e) {
+                System.err.println("Error committing changes: " + e.getMessage());
+            }
+            return;
+        }
         if (products.isEmpty()){
             System.out.println(yellow+"⚠️ No data, can't commit...!");
-            return;
         }
         else{
             if (!hasUncommittedTransactions()) {
@@ -335,6 +394,7 @@ public class ProductController implements Color {
             }
         }
     }
+
     public boolean areChangesCommitted() {
         return this.changesCommitted;
     }
@@ -349,95 +409,28 @@ public class ProductController implements Color {
         return searchResults;
     }
 
-
-    // Method to delete product by code from transaction file
-    /*public void deleteProductByCode(String code) {
-        System.out.print("[+] Are you sure you want to delete this product [Y/N] :");
-        Scanner sc = new Scanner(System.in);
-        String answer = sc.next();
+    public void deleteProductByCode(String code){
+        System.out.println("[#] Are you sure you want to delete this product's ??? [Y/N]: ");
+        String answer = new Scanner(System.in).next();
         if (answer.equalsIgnoreCase("y")) {
-            File transactionFile = new File("data/transaction.dat");
-            File tempFile = new File("data/temp.dat");
+            for (int i = 0; i < products.size(); i++) {
+                // Get the product at the current index
+                Product product = products.get(i);
 
-            try (BufferedReader reader = new BufferedReader(new FileReader(transactionFile));
-                 BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Check if the line starts with the product code
-                    if (!line.startsWith(code)) {
-                        // If not, write the line to the temporary file
-                        writer.write(line + System.lineSeparator());
-                        products.removeIf(p -> p.getCode().equalsIgnoreCase(code));
-                    }
+                // Check if the code of the current product matches the given code
+                if (product.getCode().equals(code)) {
+                    // Remove the product from the list
+                    products.remove(i);
+                    // Decrement the index as the size of the list has decreased
+                    i--;
+                    writeProductsToFile();
+                    delete=true;
+                    break;
                 }
-            } catch (IOException e) {
-                System.err.println("Error deleting product from transaction file: " + e.getMessage());
-                return;
-            }
-
-
-            // Replace the original transaction file with the temporary file
-            try {
-                // Delete the original transaction file
-                if (!transactionFile.delete()) {
-                    throw new IOException("Failed to delete original transaction file.");
-                }
-                // Rename the temporary file to replace the original transaction file
-                if (!tempFile.renameTo(transactionFile)) {
-                    throw new IOException("Failed to rename temporary file.");
-                }
-                System.out.println("Product deleted successfully.");
-            } catch (IOException e) {
-                System.err.println("Error replacing transaction file: " + e.getMessage());
             }
         }else if (answer.equalsIgnoreCase("n")){
-            System.out.println("[+] You didn't delete anything!!");
-        }
-    }*/
-
-    public void deleteProductByCode(String code) {
-        System.out.print("[+] Are you sure you want to delete this product [Y/N] :");
-        Scanner sc = new Scanner(System.in);
-        String answer = sc.next();
-        if (answer.equalsIgnoreCase("y")) {
-            File transactionFile = new File("data/transaction.dat");
-            File tempFile = new File("data/temp.dat");
-
-            try (BufferedReader reader = new BufferedReader(new FileReader(transactionFile));
-                 BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Check if the line starts with the product code
-                    if (!line.startsWith(code)) {
-                        // If not, write the line to the temporary file
-                        writer.write(line + System.lineSeparator());
-                        products.removeIf(p -> p.getCode().equalsIgnoreCase(code));
-                    }
-                }
-            } catch (IOException e) {
-                System.err.println("Error deleting product from transaction file: " + e.getMessage());
-                return;
-            }
-
-
-            // Replace the original transaction file with the temporary file
-            try {
-                // Delete the original transaction file
-                if (!transactionFile.delete()) {
-                    throw new IOException("Failed to delete original transaction file.");
-                }
-                // Rename the temporary file to replace the original transaction file
-                if (!tempFile.renameTo(transactionFile)) {
-                    throw new IOException("Failed to rename temporary file.");
-                }
-                System.out.println("Product deleted successfully.");
-            } catch (IOException e) {
-                System.err.println("Error replacing transaction file: " + e.getMessage());
-            }
-        }else if (answer.equalsIgnoreCase("n")){
-            System.out.println("[+] You didn't delete anything!!");
+            System.out.println("[#] You didn't delete anything.....");
+            delete=false;
         }
     }
 
