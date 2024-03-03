@@ -2,7 +2,6 @@ package view;
 
 import model.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
-import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
@@ -19,7 +18,7 @@ public class ProductView implements Color {
     public void displayProducts(List<Product> products) {
         while (true) {
             display(products);
-            System.out.print("\uD83C\uDD71️.Back or to Navigate page: ");
+            System.out.print("(B).Back or to Navigate page: ");
             String page = scanner.nextLine();
             if(Objects.equals(page, "b")) return;
             switch (page.toLowerCase()){
@@ -27,36 +26,21 @@ public class ProductView implements Color {
                     currentPage=1;
                 }
                 case "p" -> {
-                    if(currentPage < 1){
-                        System.out.println("The minimum page is 1 only.");
-                        currentPage = 1;
-                    }
-                    else currentPage-=1;
+                    currentPage-=1;
                 }
                 case "g" -> {
-                    System.out.print("➡️ Enter numberPage to navigate = ");
-                    int pageInput = scanner.nextInt();
-                    if(pageInput > pageSize) {
-                        System.out.println("The maximum page is "+page+" only.");
-                        currentPage = pageSize;
-                    } else if (pageInput < 1) {
-                        System.out.println("The minimum page is 1 only.");
-                        currentPage = 1;
-                    }
-                    else currentPage = pageInput;
+                    System.out.print("Enter numberPage to navigate = ");
+                    Integer pageInput = scanner.nextInt();
+                    currentPage = pageInput;
                 }
                 case "n" -> {
-                    if(currentPage > pageSize){
-                        System.out.println("The maximum page is "+page+" only.");
-                        currentPage = pageSize;
-                    }
-                    else currentPage+=1;
+                    currentPage+=1;
                 }
                 case "l" -> {
                     currentPage = pageSize;
                 }
                 default -> {
-                    System.out.println("⚠️ Invalidate option...!");
+                    System.out.println("Invalidate option...!");
                 }
             }
         }
@@ -66,16 +50,15 @@ public class ProductView implements Color {
     public static void display(List<Product> product) {
         System.out.println("Products List as Table");
         Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
-        CellStyle cellStyle = new CellStyle(CellStyle.HorizontalAlign.center);
         table.setColumnWidth(0,15,20);
         table.setColumnWidth(1,15,20);
         table.setColumnWidth(2,15,20);
         table.setColumnWidth(3,15,20);
         table.setColumnWidth(4,15,20);
-        table.addCell("Code",cellStyle);
-        table.addCell("Name",cellStyle);
-        table.addCell("Price",cellStyle);
-        table.addCell("QTY",cellStyle);
+        table.addCell("Code");
+        table.addCell("Name");
+        table.addCell("Price");
+        table.addCell("QTY");
         table.addCell("Imported At");
 
         pageSize = (int) Math.ceil((double) product.size() / rowPerPage);
@@ -83,73 +66,118 @@ public class ProductView implements Color {
         int endIndex = Math.min(startIndex + rowPerPage, product.size());
         System.out.println("Total Page : " + pageSize);
 
-        for (int i = startIndex; i < endIndex; i++) {
-            table.addCell(product.get(i).getCode(),cellStyle);
-            table.addCell(product.get(i).getName(),cellStyle);
-            table.addCell(product.get(i).getPrice().toString(),cellStyle);
-            table.addCell(product.get(i).getQty().toString(),cellStyle);
-            table.addCell(product.get(i).getImported_at(),cellStyle);
+        try {
+            for (int i = startIndex; i < endIndex; i++) {
+                table.addCell(product.get(i).getCode());
+                table.addCell(product.get(i).getName());
+                table.addCell(product.get(i).getPrice().toString());
+                table.addCell(product.get(i).getQty().toString());
+                table.addCell(product.get(i).getImported_at());
+            }
+            System.out.println(table.render());
+            System.out.println("+" + "~".repeat(89) + "+");
+            System.out.println(" Page " + currentPage + " of " + pageSize + " ".repeat(58) + "Total Record: " + product.size());
+            System.out.println(" Page Navigation" + " ".repeat(25) + "(F).First (P).Previous (G).Goto (N).Next (L).Last");
+            System.out.println("+" + "~".repeat(89) + "+");
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("No records to display.");
         }
-        System.out.println(table.render());
-        System.out.println("+" + "~".repeat(89) + "+");
-        System.out.println(" Page " + currentPage + " of " + pageSize + " ".repeat(58) + "Total Record: " + product.size());
-        System.out.println(" Page Navigation" + " ".repeat(25) + "(F).First (P).Previous (G).Goto (N).Next (L).Last");
-        System.out.println("+" + "~".repeat(89) + "+");
-
     }
 
-    public void setRow(){
-        System.out.println("#️⃣".repeat(15));
-        System.out.println("#️⃣ Set row to display in table");
-        scanner.nextLine();
+    public void setRow() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("#".repeat(15));
+        System.out.println("# Set row to display in table");
         int rowInput = 0;
         boolean validInput = false;
+
         while (!validInput) {
             try {
-                System.out.print("➡️ Enter row: ");
+                System.out.print("> Enter row: ");
                 rowInput = scanner.nextInt();
-                System.out.print("\uD83E\uDD14 Are you sure to set row display? [y/n]: ");
                 validInput = true;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a valid integer.");
-                scanner.next();
+                scanner.next(); // consume the invalid input
             }
         }
 
+        scanner.nextLine(); // consume newline character after nextInt()
 
         System.out.print("> Are you sure to set row display? [y/n]: ");
         String save = scanner.nextLine();
         if (save.equalsIgnoreCase("y")) {
             rowPerPage = rowInput;
-            System.out.println("✔️  Set row successfully...!");
+            System.out.println("# Set row successfully...!");
         }
-        System.out.println("#️⃣".repeat(15));
+        System.out.println("#".repeat(15));
     }
 
-        // Method to display product details
-        public void displayProductDetails(Product product) {
-            if (product != null) {
-                Table table = new Table(1, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE, ShownBorders.SURROUND);
-                System.out.println("Product Details:");
-                table.addCell("ID" + " ".repeat(20) + ": " + product.getCode());
-                table.addCell("Name" + " ".repeat(18) + ": " + product.getName());
-                table.addCell("Unit Price" + " ".repeat(12) + ": " + product.getPrice());
-                table.addCell("Qty" + " ".repeat(19) + ": " + product.getQty());
-                table.addCell("Imported Date" + " ".repeat(9) + ": " + product.getImported_at());
-                System.out.println(table.render());
-            } else {
-                System.out.println("\uD83D\uDEAB Product not found.");
+    public void randomDisplay(List<Product> product){
+        System.out.println("Products List as Table");
+        Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
+        table.setColumnWidth(0,15,20);
+        table.setColumnWidth(1,15,20);
+        table.setColumnWidth(2,15,20);
+        table.setColumnWidth(3,15,20);
+        table.setColumnWidth(4,15,20);
+        table.addCell("Code");
+        table.addCell("Name");
+        table.addCell("Price");
+        table.addCell("QTY");
+        table.addCell("Imported At");
+
+        pageSize = (int) Math.ceil((double) product.size() / rowPerPage);
+        int startIndex = (currentPage * rowPerPage) - rowPerPage; // 5
+        int endIndex = Math.min(startIndex + rowPerPage, product.size());
+        System.out.println("Total Page : " + pageSize);
+
+        try {
+            for (int i = startIndex; i < endIndex; i++) {
+                table.addCell(product.get(i).getCode());
+                table.addCell(product.get(i).getName());
+                table.addCell(product.get(i).getPrice().toString());
+                table.addCell(product.get(i).getQty().toString());
+                table.addCell(product.get(i).getImported_at());
             }
-        }
-        public void previewUpdate(String code,String name,double price,int qty,String date) {
-            Table table = new Table(1, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE, ShownBorders.SURROUND);
-            System.out.println("Product's All Details Preview After Update:");
-            table.addCell("ID" + " ".repeat(20) + ": " + code);
-            table.addCell("Name" + " ".repeat(18) + ": " + name);
-            table.addCell("Unit Price" + " ".repeat(12) + ": " + price);
-            table.addCell("Qty" + " ".repeat(19) + ": " + qty);
-            table.addCell("Imported Date" + " ".repeat(9) + ": " + date);
             System.out.println(table.render());
+            System.out.println("+" + "~".repeat(89) + "+");
+            System.out.println(" Page " + currentPage + " of " + pageSize + " ".repeat(58) + "Total Record: " + product.size());
+            System.out.println(" Page Navigation" + " ".repeat(25) + "(F).First (P).Previous (G).Goto (N).Next (L).Last");
+            System.out.println("+" + "~".repeat(89) + "+");
+        } catch (IndexOutOfBoundsException e) {
+            // Handle the case when the index is out of bounds (i.e., when total page count is 0)
+            System.out.println("No records to display.");
         }
+
+
+    }
+
+
+    // Method to display product details
+    public void displayProductDetails(Product product) {
+        if (product != null) {
+            Table table = new Table(1, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE, ShownBorders.SURROUND);
+            System.out.println("Product Details:");
+            table.addCell("ID" + " ".repeat(20) + ": " + product.getCode());
+            table.addCell("Name" + " ".repeat(18) + ": " + product.getName());
+            table.addCell("Unit Price" + " ".repeat(12) + ": " + product.getPrice());
+            table.addCell("Qty" + " ".repeat(19) + ": " + product.getQty());
+            table.addCell("Imported Date" + " ".repeat(9) + ": " + product.getImported_at());
+            System.out.println(table.render());
+        } else {
+            System.out.println("Product not found.");
+        }
+    }
+    public void previewUpdate(String code,String name,double price,int qty,String date) {
+        Table table = new Table(1, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE, ShownBorders.SURROUND);
+        System.out.println("Product's All Details Preview After Update:");
+        table.addCell("ID" + " ".repeat(20) + ": " + code);
+        table.addCell("Name" + " ".repeat(18) + ": " + name);
+        table.addCell("Unit Price" + " ".repeat(12) + ": " + price);
+        table.addCell("Qty" + " ".repeat(19) + ": " + qty);
+        table.addCell("Imported Date" + " ".repeat(9) + ": " + date);
+        System.out.println(table.render());
+    }
 
 }
