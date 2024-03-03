@@ -83,7 +83,7 @@ public class ProductController implements Color {
         }
     }
 
-    public void index(){
+    /*public void index(){
         products.clear();
         usedProductCodes.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
@@ -113,7 +113,39 @@ public class ProductController implements Color {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
         System.out.println();
+    }*/
+    public void index(){
+        products.clear();
+        usedProductCodes.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
+            String line;
+            int i=0;
+            int count = 1;
+            System.out.print("Loading : "+green);
+            long startTime = System.nanoTime();
+            while ((line = reader.readLine()) != null) {
+                Product product = parseProductLine(line);
+                if (product != null) {
+                    products.add(product);
+                    usedProductCodes.add(product.getCode());
+                    if (count == 100) System.out.print("\r♨️ Data is Loading ...../");
+                    if (count == 200) {
+                        System.out.print("\r♨️ Data is Loading .....\\ ");
+                        count=1;
+                    }
+                    count++;
+                    i++;
+                }
+            }
+            long endTime = System.nanoTime(); // End time
+            long resultTime = endTime - startTime;
+            System.out.println(reset+"\r♨️ Loading spend: " + (resultTime /  1_000_000_000.0) + " seconds.");
+        } catch (IOException e) {
+            System.err.println("Error reading data from file: " + e.getMessage());
+        }
+        System.out.println();
     }
+
 
     public void loading(){
         for (int i = 0; i <= 100; i+=2) {
@@ -632,5 +664,14 @@ public class ProductController implements Color {
             System.out.println("You didn't backup data....!");
         }
     }
+    public Boolean clearFile(String filePath) {
+        try (FileWriter writer = new FileWriter(filePath)) {
+            writer.write("");
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
 
 }
