@@ -312,21 +312,27 @@ public class ProductController implements Color {
     }
 
     public void commitChanges() {
-        if (!hasUncommittedTransactions()) {
-            System.out.println("No uncommitted transactions to commit.");
+        if (products.isEmpty()){
+            System.out.println(yellow+"⚠️ No data, can't commit...!");
             return;
         }
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
-             BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                writer.write(line);
-                writer.newLine();
+        else{
+            if (!hasUncommittedTransactions()) {
+                System.out.println("No uncommitted transactions to commit.");
+                return;
             }
-            System.out.println("Changes committed successfully!");
-            this.changesCommitted = true; // Set the flag indicating changes have been committed
-        } catch (IOException e) {
-            System.err.println("Error committing changes: " + e.getMessage());
+            try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
+                 BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+                System.out.println(blue+"✅ Changes committed successfully!"+reset);
+                this.changesCommitted = true; // Set the flag indicating changes have been committed
+            } catch (IOException e) {
+                System.err.println("Error committing changes: " + e.getMessage());
+            }
         }
     }
     public boolean areChangesCommitted() {

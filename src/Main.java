@@ -33,8 +33,8 @@ public class Main {
             switch (choice.toLowerCase()) {
                 case "l" -> {
                     // Read data from transaction source file
-                    //controller.readDataFromFile("data/transaction.dat");
-                    view.displayProducts(products);
+                    if(products.isEmpty())  System.out.println("⛔ No data...!");
+                    else view.displayProducts(products);
                 }
                 case "m" -> {
                     try {
@@ -68,53 +68,70 @@ public class Main {
                         System.out.println(error.getMessage());
                     }
                 }
-                //case "cl" -> ProductController.clearFile();
                 case "w" -> {
                     // Create new product
                     controller.createProduct();
                 }
                 case "r" -> {
-                    System.out.print("Enter product code: ");
-                    String productCode = scanner.nextLine().trim();
-                    Product product = controller.getProductDetailByCode(productCode);
-                    ProductView view = new ProductView();
-                    view.displayProductDetails(product);
+                    if(products.isEmpty()){
+                        System.out.println(yellow+"⚠️ No data,can't search...!");
+                    }
+                    else {
+                        System.out.print("Enter product code: ");
+                        String productCode = scanner.nextLine().trim();
+                        Product product = controller.getProductDetailByCode(productCode);
+                        ProductView view = new ProductView();
+                        view.displayProductDetails(product);
+                    }
                 }
                 case "e" -> {
-                    System.out.print("Enter Product Code: ");
-                    String productCode = scanner.nextLine().trim();
-                    Product product = controller.getProductDetailByCode(productCode);
-                    ProductView view = new ProductView();
-                    view.displayProductDetails(product);
-                    if (product == null) {
-                        break;
-                    } else {
-                        controller.editProduct(productCode);
+                    if(products.isEmpty()){
+                        System.out.println(yellow+"⚠️ No data,");
                     }
-
+                    else {
+                        System.out.print("Enter Product Code: ");
+                        String productCode = scanner.nextLine().trim();
+                        Product product = controller.getProductDetailByCode(productCode);
+                        ProductView view = new ProductView();
+                        view.displayProductDetails(product);
+                        if (product == null) {
+                            break;
+                        } else {
+                            controller.editProduct(productCode);
+                        }
+                    }
                 }
                 case "d"-> {
-                    System.out.print("Enter product code to delete: ");
-                    String productCode = scanner.nextLine().trim();
-                    Product product = controller.getProductDetailByCode(productCode);
-                    ProductView view = new ProductView();
-                    view.displayProductDetails(product);
-                    if (product == null) {
-                        break;
-                    } else {
-                        controller.deleteProductByCode(productCode);
+                    if(products.isEmpty()){
+                        System.out.println(yellow+"⚠️ No data,");
                     }
-
+                    else {
+                        System.out.print("Enter product code to delete: ");
+                        String productCode = scanner.nextLine().trim();
+                        Product product = controller.getProductDetailByCode(productCode);
+                        ProductView view = new ProductView();
+                        view.displayProductDetails(product);
+                        if (product == null) {
+                            break;
+                        } else {
+                            controller.deleteProductByCode(productCode);
+                        }
+                    }
                 }
                 case "s"-> {
-                    System.out.print("Enter product name to search: ");
-                    String searchTerm = scanner.nextLine().trim();
-                    List<Product> searchResults = controller.searchProductByName(searchTerm);
-                    if (searchResults.isEmpty()) {
-                        System.out.println("No matching products found.");
-                    } else {
-                        ProductView view = new ProductView();
-                        view.displayProducts(searchResults);
+                    if(products.isEmpty()){
+                        System.out.println(yellow+"⚠️ No data, can't search...!");
+                    }
+                    else{
+                        System.out.print("Enter product name to search: ");
+                        String searchTerm = scanner.nextLine().trim();
+                        List<Product> searchResults = controller.searchProductByName(searchTerm);
+                        if (searchResults.isEmpty()) {
+                            System.out.println("No matching products found.");
+                        } else {
+                            ProductView view = new ProductView();
+                            view.displayProducts(searchResults);
+                        }
                     }
                     break;
                 }

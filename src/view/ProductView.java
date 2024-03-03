@@ -2,6 +2,7 @@ package view;
 
 import model.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
+import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
@@ -52,43 +53,39 @@ public class ProductView implements Color {
 
     // pagination for display products
     public static void display(List<Product> product) {
-        if(product.isEmpty()){
-            System.out.println("⛔ No data...!");
-        }
-        else{
-            pageSize = (int) Math.ceil((double) product.size() / rowPerPage);
-            int startIndex = (currentPage * rowPerPage) - rowPerPage; // 5
-            int endIndex = Math.min(startIndex + rowPerPage, product.size());
-            System.out.println("Total Page : " + pageSize);
+        pageSize = (int) Math.ceil((double) product.size() / rowPerPage);
+        int startIndex = (currentPage * rowPerPage) - rowPerPage; // 5
+        int endIndex = Math.min(startIndex + rowPerPage, product.size());
+        System.out.println("Total Page : " + pageSize);
 
-            System.out.println("#"+"=".repeat(32)+" Products List as Table "+"=".repeat(32)+"#");
-            Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
-            table.setColumnWidth(0,15,20);
-            table.setColumnWidth(1,15,20);
-            table.setColumnWidth(2,15,20);
-            table.setColumnWidth(3,15,20);
-            table.setColumnWidth(4,15,20);
-            table.addCell(darkMagenta+"Code");
-            table.addCell(darkMagenta+"Name");
-            table.addCell(darkMagenta+"Price");
-            table.addCell(darkMagenta+"QTY");
-            table.addCell(darkMagenta+"Imported At"+reset);
-            try {
-                for (int i = startIndex; i < endIndex; i++) {
-                    table.addCell(blue+product.get(i).getCode());
-                    table.addCell(blue+product.get(i).getName());
-                    table.addCell(blue+product.get(i).getPrice().toString());
-                    table.addCell(blue+product.get(i).getQty().toString());
-                    table.addCell(blue+product.get(i).getImported_at()+reset);
-                }
-                System.out.println(table.render());
-                System.out.println("+" + "~".repeat(89) + "+");
-                System.out.println(" Page " + currentPage + " of " + pageSize + " ".repeat(50) + "Total Record: " + product.size());
-                System.out.println(" Page Navigation" + " ".repeat(25) + "(F).First (P).Previous (G).Goto (N).Next (L).Last");
-                System.out.println("+" + "~".repeat(89) + "+");
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("No records to display.");
+        System.out.println("#"+"=".repeat(32)+" Products List as Table "+"=".repeat(32)+"#");
+        Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
+        CellStyle cellStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+        table.setColumnWidth(0,15,20);
+        table.setColumnWidth(1,15,20);
+        table.setColumnWidth(2,15,20);
+        table.setColumnWidth(3,15,20);
+        table.setColumnWidth(4,15,20);
+        table.addCell(darkMagenta+"Code",cellStyle);
+        table.addCell(darkMagenta+"Name",cellStyle);
+        table.addCell(darkMagenta+"Price",cellStyle);
+        table.addCell(darkMagenta+"QTY",cellStyle);
+        table.addCell(darkMagenta+"Imported At"+reset,cellStyle);
+        try {
+            for (int i = startIndex; i < endIndex; i++) {
+                table.addCell(blue+product.get(i).getCode(), cellStyle);
+                table.addCell(blue+product.get(i).getName(), cellStyle);
+                table.addCell(blue+product.get(i).getPrice().toString(), cellStyle);
+                table.addCell(blue+product.get(i).getQty().toString(), cellStyle);
+                table.addCell(blue+product.get(i).getImported_at()+reset, cellStyle);
             }
+            System.out.println(table.render());
+            System.out.println("+" + "~".repeat(89) + "+");
+            System.out.println(" Page " + currentPage + " of " + pageSize + " ".repeat(50) + "Total Record: " + product.size());
+            System.out.println(" Page Navigation" + " ".repeat(25) + "(F).First (P).Previous (G).Goto (N).Next (L).Last");
+            System.out.println("+" + "~".repeat(89) + "+");
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("No records to display.");
         }
     }
 
