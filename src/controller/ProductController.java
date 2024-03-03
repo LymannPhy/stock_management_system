@@ -736,8 +736,4 @@ public class ProductController implements Color {
         return true;
     }
 
-    public static void main(String[] args) {
-        clearFile("data/product.dat");
-    }
-
 }
