@@ -66,11 +66,11 @@ public class ProductView implements Color {
         table.setColumnWidth(2,15,20);
         table.setColumnWidth(3,15,20);
         table.setColumnWidth(4,15,20);
-        table.addCell(darkMagenta+"Code",cellStyle);
-        table.addCell(darkMagenta+"Name",cellStyle);
-        table.addCell(darkMagenta+"Price",cellStyle);
-        table.addCell(darkMagenta+"QTY",cellStyle);
-        table.addCell(darkMagenta+"Imported At"+reset,cellStyle);
+        table.addCell(yellow+"Code",cellStyle);
+        table.addCell(yellow+"Name",cellStyle);
+        table.addCell(yellow+"Price",cellStyle);
+        table.addCell(yellow+"QTY",cellStyle);
+        table.addCell(yellow+"Imported At"+reset,cellStyle);
         try {
             for (int i = startIndex; i < endIndex; i++) {
                 table.addCell(blue+product.get(i).getCode(), cellStyle);
@@ -164,11 +164,11 @@ public class ProductView implements Color {
         if (product != null) {
             Table table = new Table(1, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE, ShownBorders.SURROUND);
             System.out.println("Product Details:");
-            table.addCell("ID" + " ".repeat(20) + ": " + product.getCode());
-            table.addCell("Name" + " ".repeat(18) + ": " + product.getName());
-            table.addCell("Unit Price" + " ".repeat(12) + ": " + product.getPrice());
-            table.addCell("Qty" + " ".repeat(19) + ": " + product.getQty());
-            table.addCell("Imported Date" + " ".repeat(9) + ": " + product.getImported_at());
+            table.addCell(yellow+"ID" + " ".repeat(20) + ": " + product.getCode());
+            table.addCell(yellow+"Name" + " ".repeat(18) + ": " + product.getName());
+            table.addCell(yellow+"Unit Price" + " ".repeat(12) + ": " + product.getPrice());
+            table.addCell(yellow+"Qty" + " ".repeat(19) + ": " + product.getQty());
+            table.addCell(yellow+"Imported Date" + " ".repeat(9) + ": " + product.getImported_at()+reset);
             System.out.println(table.render());
         } else {
             System.out.println("Product not found.");
@@ -177,11 +177,11 @@ public class ProductView implements Color {
     public void previewUpdate(String code,String name,double price,int qty,String date) {
         Table table = new Table(1, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE, ShownBorders.SURROUND);
         System.out.println("Product's All Details Preview After Update:");
-        table.addCell("ID" + " ".repeat(20) + ": " + code);
-        table.addCell("Name" + " ".repeat(18) + ": " + name);
-        table.addCell("Unit Price" + " ".repeat(12) + ": " + price);
-        table.addCell("Qty" + " ".repeat(19) + ": " + qty);
-        table.addCell("Imported Date" + " ".repeat(9) + ": " + date);
+        table.addCell(yellow+"ID" + " ".repeat(20) + ": " + code);
+        table.addCell(yellow+"Name" + " ".repeat(18) + ": " + name);
+        table.addCell(yellow+"Unit Price" + " ".repeat(12) + ": " + price);
+        table.addCell(yellow+"Qty" + " ".repeat(19) + ": " + qty);
+        table.addCell(yellow+"Imported Date" + " ".repeat(9) + ": " + date+reset);
         System.out.println(table.render());
     }
 

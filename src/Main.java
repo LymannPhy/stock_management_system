@@ -160,6 +160,7 @@ public class Main {
                         if (commitDecision.equals("y")) {
                             controller.commitChanges();
                         }
+                        controller.clearFile("data/transaction.dat");
                     }
                     System.out.println("Exiting the program.");
                     return;
@@ -169,6 +170,8 @@ public class Main {
                     String answer = new Scanner(System.in).next();
                     if (answer.equalsIgnoreCase("y")){
                         controller.clearFile("data/product.dat");
+                        controller.clearFile("data/transaction.dat");
+                        System.out.println(" Clear success...!");
                     }else if (answer.equalsIgnoreCase("n")){
                         System.out.println("[+] You didn't clear anything....");
                     }

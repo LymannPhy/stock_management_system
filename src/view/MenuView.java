@@ -28,7 +28,7 @@ public class MenuView implements Color {
     // Method to display the menu
     public static void displayMenu() {
         //System.out.println(blue+ " ".repeat(35) +"➡️ Application Menu ⬅️" + reset);
-        System.out.println(magenta+"☆".repeat(71) );
+        System.out.println(blue+"☆".repeat(71) );
         System.out.print("""
        ╔═════════════════════════════════════════════════════════════════════════════════════════════════╗
        ║                                        Application Menu                                         ║
@@ -43,22 +43,22 @@ public class MenuView implements Color {
     public static void displayHelp(){
         Table table = new Table(1, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE, ShownBorders.SURROUND);
         System.out.println("#" + "=".repeat(27)+" Help Instruction "+"=".repeat(28)+"#");
-        table.addCell(darkBlue+"1.       Press       L, l  :   Display products as table");
-        table.addCell(darkBlue+"2.       Press       W, w  :   Create a new product ");
-        table.addCell(darkBlue+"3.       Press       M, m  :   Random Product");
-        table.addCell(darkBlue+"4.       Press       R, r  :   View product detail by code");
-        table.addCell(darkBlue+"5.       Press       E, e  :   Edit an existing product by code");
-        table.addCell(darkBlue+"6.       Press       D, d  :   Delete an existing product by code");
-        table.addCell(darkBlue+"7.       Press       S, s  :   Search an existing product by name");
-        table.addCell(darkBlue+"8.       Press       C, c  :   Commit transactional data");
-        table.addCell(darkBlue+"9.       Press       K, k  :   Backup data");
-        table.addCell(darkBlue+"10.      Press       R, r  :   Restore data    ");
-        table.addCell(darkBlue+"11.      Press       F, f  :   Navigate pagination to the last page");
-        table.addCell(darkBlue+"12.      Press       P, p  :   Navigate pagination to the previous page");
-        table.addCell(darkBlue+"13.      Press       N, n  :   Navigate pagination to the Next page");
-        table.addCell(darkBlue+"14.      Press       H, h  :   Navigate pagination to the last page");
-        table.addCell(darkBlue+"15.      Press       B, b  :   Step back of the application");
-        table.addCell(darkBlue+"16.      Press       X, x  :   Exit the application"+reset);
+        table.addCell(blue+"1.       Press       L, l  :   Display products as table");
+        table.addCell(blue+"2.       Press       W, w  :   Create a new product ");
+        table.addCell(blue+"3.       Press       M, m  :   Random Product");
+        table.addCell(blue+"4.       Press       R, r  :   View product detail by code");
+        table.addCell(blue+"5.       Press       E, e  :   Edit an existing product by code");
+        table.addCell(blue+"6.       Press       D, d  :   Delete an existing product by code");
+        table.addCell(blue+"7.       Press       S, s  :   Search an existing product by name");
+        table.addCell(blue+"8.       Press       C, c  :   Commit transactional data");
+        table.addCell(blue+"9.       Press       K, k  :   Backup data");
+        table.addCell(blue+"10.      Press       R, r  :   Restore data    ");
+        table.addCell(blue+"11.      Press       F, f  :   Navigate pagination to the last page");
+        table.addCell(blue+"12.      Press       P, p  :   Navigate pagination to the previous page");
+        table.addCell(blue+"13.      Press       N, n  :   Navigate pagination to the Next page");
+        table.addCell(blue+"14.      Press       H, h  :   Navigate pagination to the last page");
+        table.addCell(blue+"15.      Press       B, b  :   Step back of the application");
+        table.addCell(blue+"16.      Press       X, x  :   Exit the application"+reset);
         System.out.println(table.render());
     }
 
