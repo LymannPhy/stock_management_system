@@ -44,7 +44,7 @@ public class Main {
                             switch (op) {
                                 case 1 -> controller.randomWrite();
                                 case 2 -> {
-                                    controller.randomRead("data/transaction.dat");
+                                    controller.randomRead("data/product.dat");
                                     view.displayProducts(products);
                                 }
                                 case 3 -> {
@@ -59,7 +59,7 @@ public class Main {
                         }
                     }
                 }
-                case "cl" -> ProductController.clearFile("product.dat");
+                case "cl" -> ProductController.clearFile("data/product.dat");
                 case "w" -> {
                     // Create new product
                     controller.createProduct();

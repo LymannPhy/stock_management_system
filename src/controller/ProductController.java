@@ -10,18 +10,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 import static model.Product.parseProductLine;
 
 public class ProductController implements Color {
     private static List<Product> products;
-    private HashSet<String> usedProductCodes;
+    private static HashSet<String> usedProductCodes;
     static Scanner scanner = new Scanner(System.in);
     private ProductView view = new ProductView();
     private int nextProductNumber;
@@ -97,9 +96,9 @@ public class ProductController implements Color {
                 if (product != null) {
                     products.add(product);
                     usedProductCodes.add(product.getCode());
-                    if (count == 100) System.out.print("\r♨️ Data is Loading ...../|");
-                    if (count == 400) {
-                        System.out.print("\rData is Loading .....|\\\"");
+                    if (count == 100) System.out.print("\r♨️ Data is Loading ...../");
+                    if (count == 200) {
+                        System.out.print("\r♨️ Data is Loading .....\\ ");
                         count=1;
                     }
                     count++;
@@ -140,6 +139,14 @@ public class ProductController implements Color {
     // choice 1
     // choice 1
     public void randomWrite() {
+        System.out.println("Do you want to append or override?");
+        System.out.println("1. Append");
+        System.out.println("2. Override");
+        System.out.print("➡️ Enter choice = ");
+        int ch = scanner.nextInt();
+        boolean status = false;
+        if(ch == 1) status = true;
+        else if(ch == 2 ) status = false;
         System.out.print("➡️ Enter random amount = ");
         int amount = scanner.nextInt();
         amountProduct = amount;
@@ -147,7 +154,7 @@ public class ProductController implements Color {
         scanner.nextLine();
         String save = scanner.nextLine();
         if (Objects.equals(save, "y")) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat",true))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat",status))) {
                 long startTime = System.nanoTime(); // Start time
                 int i = 0;
                 int lastProductNumber = getLastProductNumber(); // Get the last product number from the transaction file
@@ -177,9 +184,108 @@ public class ProductController implements Color {
         }
     }
 
+    /*static AtomicInteger amount = new AtomicInteger();
+    static AtomicInteger j = new AtomicInteger();
+    public static void randomWrite() {
+        System.out.print("> Enter random amount = ");
+        int amount1 = scanner.nextInt();
+        Thread thread1 = new Thread(() -> {
+            amount.set(amount1);
+            System.out.print("> Are you sure to random " + amount + " products? [y/n]: ");
+            scanner.nextLine(); // Consume the newline left-over
+            String save = scanner.nextLine();
+            if (Objects.equals(save, "y")) {
+                System.out.println("Waiting....");
+                long startTime = System.nanoTime(); // Start time
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat",true))) {
+                    int i = 0;
+                    int lastProductNumber = getLastProductNumber(); // Get the last product number from the transaction file
+                    while (i < amount.get()) {
+                        j.incrementAndGet();
+                        String productCode = "CSTAD-" + (lastProductNumber + i + 1); // Generate product code
+                        // Create new product only if the code is not already used
+                        if (!usedProductCodes.contains(productCode)) {
+                            Product newProduct = new Product(productCode, "P" + (lastProductNumber + i + 1), 10.00d, 10, LocalDate.now().toString());
+                            String serializedProduct = serializeProduct(newProduct);
+                            writer.write(serializedProduct);
+                            writer.newLine();
+                            usedProductCodes.add(productCode); // Add the code to the used codes set
+                            i++;
+                        }
+                    }
+                    System.out.println(j);
+                } catch (IOException e) {
+                    System.err.println("Error writing to transaction file: " + e.getMessage());
+                }
+
+                System.out.println(amount + " Product(s) created successfully.");
+                long endTime = System.nanoTime(); // End time
+                long resultTime = endTime - startTime;
+                System.out.println("Writing " + amount + " products spent: " + (resultTime /  1_000_000_000.0) + " seconds.");
+            }
+        });
+        Thread thread2 = new Thread(() -> {
+            try {
+                thread1.join(); // Wait for thread1 to complete
+                while (j.get() != amount.get()) {
+                    int progress = (int) (((double) j.get() / amount.get()) *  100);
+                    System.out.print("\rLoading [" + progress + "%] ");
+                }
+                System.out.println("\nThread  2: j = " + j + ", amount = " + amount);
+            } catch (InterruptedException e) {
+                System.out.println("Thread  2 was interrupted: " + e.getMessage());
+            }
+        });
+        thread1.start();
+        //thread2.start();
+        try {
+            thread1.join();
+            //thread2.join();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }*/
+
+    /*public void randomWrite() {
+        System.out.println("Do you want to append or override?");
+        System.out.println("1. Append");
+        System.out.println("2. Override");
+        System.out.print("➡️ Enter choice = ");
+        int ch = scanner.nextInt();
+        boolean status = ch == 1; // Simplified assignment
+        System.out.print("➡️ Enter random amount = ");
+        int amount = scanner.nextInt();
+        amountProduct = amount;
+        System.out.print("\uD83E\uDD14 Are you sure to random " + amount + " products? [y/n]: ");
+        scanner.nextLine(); // Consume the leftover newline
+        String save = scanner.nextLine();
+        if (Objects.equals(save, "y")) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat", status))) {
+                long startTime = System.nanoTime();
+                int lastProductNumber = getLastProductNumber();
+
+                // Generate and write products
+                String serializedProducts = IntStream.rangeClosed(1, amount)
+                        .mapToObj(i -> "CSTAD-" + (lastProductNumber + i))
+                        .filter(code -> !usedProductCodes.contains(code))
+                        .map(code -> new Product(code, "P" + (lastProductNumber + IntStream.rangeClosed(1, amount).findFirst().orElse(0)), 10.00d, 10, LocalDate.now().toString()))
+                        .peek(product -> usedProductCodes.add(product.getCode()))
+                        .map(this::serializeProduct)
+                        .collect(Collectors.joining("\n"));
+
+                writer.write(serializedProducts);
+
+                long endTime = System.nanoTime();
+                System.out.println(amount + " ✅ Products created successfully.");
+                System.out.println("\uD83D\uDCDD Write " + amount + " products spent: " + ((endTime - startTime) / 1_000_000_000.0) + " seconds.");
+            } catch (IOException e) {
+                System.err.println("Error writing to transaction file: " + e.getMessage());
+            }
+        }
+    }*/
+
     // Helper method to get the last product number from the transaction file
-    // Helper method to get the last product number from the transaction file
-    private int getLastProductNumber() {
+    private static int getLastProductNumber() {
         int lastProductNumber = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"))) {
             String line;
@@ -518,7 +624,7 @@ public class ProductController implements Color {
     }
 
 
-    private String serializeProduct(Product product) {
+    private static String serializeProduct(Product product) {
         return String.format("%s,%s,%.2f,%d,%s", product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
     }
 
@@ -630,5 +736,8 @@ public class ProductController implements Color {
         return true;
     }
 
+    public static void main(String[] args) {
+        clearFile("data/product.dat");
+    }
 
 }
