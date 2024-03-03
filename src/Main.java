@@ -14,18 +14,21 @@ import static view.Color.yellow;
 public class Main {
     static ProductView view = new ProductView();
     static Scanner scanner = new Scanner(System.in);
+    static MenuView menuView = new MenuView();
 
     public static void main(String[] args) {
         List<Product> products = new ArrayList<>();
         // Pass the list of products to the ProductController constructor
         ProductController controller = new ProductController(products);
-        controller.start();
+        menuView.starting();
+        menuView.logo();
+        controller.index();
         boolean dataRestored = false;
         // Display menu and handle user input
         aa:
         while (true) {
             MenuView.displayMenu();
-            System.out.print("➡\uFE0F Enter your choice: ");
+            System.out.print("➡️ Enter your choice: ");
             String choice = scanner.nextLine().trim();
             switch (choice.toLowerCase()) {
                 case "l" -> {

@@ -5,6 +5,9 @@ import view.Color;
 import view.ProductView;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,92 +37,48 @@ public class ProductController implements Color {
         this.usedProductCodes = new HashSet<>();
         this.nextProductNumber = loadNextProductNumber();
         this.changesCommitted = false;
-
-    }
-
-    public void logo(){
-        String logo = """
-                \t\t\t\t\t ╔════════════════════════════════════════════════════════╗
-                \t\t\t\t\t ║ \t\t ██████╗███████╗████████╗ █████╗ ██████╗          ║
-                \t\t\t\t\t ║ \t\t██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗         ║
-                \t\t\t\t\t ║ \t\t██║     ███████╗   ██║   ███████║██║  ██║         ║
-                \t\t\t\t\t ║ \t\t██║     ╚════██║   ██║   ██╔══██║██║  ██║         ║
-                \t\t\t\t\t ║ \t\t╚██████╗███████║   ██║   ██║  ██║██████╔╝         ║
-                \t\t\t\t\t ║ \t\t ╚═════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═════╝          ║
-                \t\t\t\t\t ║ \t\t\t Center of Science Technology and             ║
-                \t\t\t\t\t ║ \t\t\t\t Advanced Development                     ║
-                \t\t\t\t\t ║ \t\t☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆        ║
-                \t\t\t\t\t ║ \t\t\t\t\t Stock Manager                        ║
-                \t\t\t\t\t ║ \t\t☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆        ║
-                \t\t\t\t\t ╚════════════════════════════════════════════════════════╝
-                """;
-        System.out.println("\n"+ yellow +logo + reset);
-    }
-
-    public void start(){
-        starting();
-        logo();
-        index();
     }
 
     public void index(){
-        products.clear();
-        usedProductCodes.clear();
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
-            String line;
-            int i=0;
-            int count = 1;
-            long startTime = System.nanoTime();
-            while ((line = reader.readLine()) != null) {
-                Product product = parseProductLine(line);
-                if (product != null) {
-                    products.add(product);
-                    usedProductCodes.add(product.getCode());
-                    if (count == 100) System.out.print("\r♨️ Data is Loading ...../");
-                    if (count == 200) {
-                        System.out.print("\r♨️ Data is Loading .....\\ ");
-                        count=1;
+       // not file
+        if(Files.exists(Paths.get("data/product.dat"))){
+            products.clear();
+            usedProductCodes.clear();
+            try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
+                String line;
+                int i=0;
+                int count = 1;
+                long startTime = System.nanoTime();
+                while ((line = reader.readLine()) != null) {
+                    Product product = parseProductLine(line);
+                    if (product != null) {
+                        products.add(product);
+                        usedProductCodes.add(product.getCode());
+                        if (count == 100) System.out.print(green+"\r♨️ Data is Loading ...../");
+                        if (count == 200) {
+                            System.out.print("\r♨️ Data is Loading .....\\ ");
+                            count=1;
+                        }
+                        count++;
+                        i++;
                     }
-                    count++;
-                    i++;
                 }
+                long endTime = System.nanoTime(); // End time
+                long resultTime = endTime - startTime;
+                if(resultTime > 100000)
+                    System.out.println(reset+"\r♨️ loading spent times: " + (resultTime /  1_000_000_000.0) + " seconds." + reset);
+                else
+                    System.out.println("\r♨️ loading spent times: " + (resultTime / 1_000_000.0) + " milliseconds." + reset);
+            } catch (IOException e) {
+                System.err.println("Error reading data from file: " + e.getMessage());
             }
-            long endTime = System.nanoTime(); // End time
-            long resultTime = endTime - startTime;
-            if(resultTime > 100000)
-                System.out.println(reset+"\r♨️ loading spent times: " + (resultTime /  1_000_000_000.0) + " seconds.");
-            else
-                System.out.println("\r♨️ loading spent times: " + (resultTime / 1_000_000.0) + " milliseconds.");
-        } catch (IOException e) {
-            System.err.println("Error reading data from file: " + e.getMessage());
+            System.out.println();
         }
-        System.out.println();
+        else System.out.println("⚠️ no file...!");
     }
 
 
-    public void starting(){
-        for (int i = 0; i <= 100; i+=2) {
-            int totalBlocks = 30;
-            int blocksToShow = (i * totalBlocks) / 100;
-            System.out.print(" ".repeat(10) + " Loading [ " + i + "% ]");
-            System.out.print(" ".repeat(10) + getProgressBar(blocksToShow, totalBlocks) + "\r");
-            try {
-                Thread.sleep(30);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        System.out.println(" "+reset);
-    }
 
-    private static String getProgressBar(int blocksToShow, int totalBlocks) {
-        String progressBar = "█".repeat(Math.max(0, blocksToShow)) +
-                " ".repeat(Math.max(0, totalBlocks - blocksToShow));
-        return green + progressBar;
-    }
-
-
-    // choice 1
     public void randomWrite() {
         System.out.print("➡️ Enter random amount = ");
         int amount = scanner.nextInt();

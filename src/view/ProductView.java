@@ -52,39 +52,43 @@ public class ProductView implements Color {
 
     // pagination for display products
     public static void display(List<Product> product) {
-        System.out.println("Products List as Table");
-        Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
-        table.setColumnWidth(0,15,20);
-        table.setColumnWidth(1,15,20);
-        table.setColumnWidth(2,15,20);
-        table.setColumnWidth(3,15,20);
-        table.setColumnWidth(4,15,20);
-        table.addCell("Code");
-        table.addCell("Name");
-        table.addCell("Price");
-        table.addCell("QTY");
-        table.addCell("Imported At");
+        if(product.isEmpty()){
+            System.out.println("⛔ No data...!");
+        }
+        else{
+            pageSize = (int) Math.ceil((double) product.size() / rowPerPage);
+            int startIndex = (currentPage * rowPerPage) - rowPerPage; // 5
+            int endIndex = Math.min(startIndex + rowPerPage, product.size());
+            System.out.println("Total Page : " + pageSize);
 
-        pageSize = (int) Math.ceil((double) product.size() / rowPerPage);
-        int startIndex = (currentPage * rowPerPage) - rowPerPage; // 5
-        int endIndex = Math.min(startIndex + rowPerPage, product.size());
-        System.out.println("Total Page : " + pageSize);
-
-        try {
-            for (int i = startIndex; i < endIndex; i++) {
-                table.addCell(product.get(i).getCode());
-                table.addCell(product.get(i).getName());
-                table.addCell(product.get(i).getPrice().toString());
-                table.addCell(product.get(i).getQty().toString());
-                table.addCell(product.get(i).getImported_at());
+            System.out.println("#"+"=".repeat(32)+" Products List as Table "+"=".repeat(32)+"#");
+            Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
+            table.setColumnWidth(0,15,20);
+            table.setColumnWidth(1,15,20);
+            table.setColumnWidth(2,15,20);
+            table.setColumnWidth(3,15,20);
+            table.setColumnWidth(4,15,20);
+            table.addCell(darkMagenta+"Code");
+            table.addCell(darkMagenta+"Name");
+            table.addCell(darkMagenta+"Price");
+            table.addCell(darkMagenta+"QTY");
+            table.addCell(darkMagenta+"Imported At"+reset);
+            try {
+                for (int i = startIndex; i < endIndex; i++) {
+                    table.addCell(blue+product.get(i).getCode());
+                    table.addCell(blue+product.get(i).getName());
+                    table.addCell(blue+product.get(i).getPrice().toString());
+                    table.addCell(blue+product.get(i).getQty().toString());
+                    table.addCell(blue+product.get(i).getImported_at()+reset);
+                }
+                System.out.println(table.render());
+                System.out.println("+" + "~".repeat(89) + "+");
+                System.out.println(" Page " + currentPage + " of " + pageSize + " ".repeat(50) + "Total Record: " + product.size());
+                System.out.println(" Page Navigation" + " ".repeat(25) + "(F).First (P).Previous (G).Goto (N).Next (L).Last");
+                System.out.println("+" + "~".repeat(89) + "+");
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("No records to display.");
             }
-            System.out.println(table.render());
-            System.out.println("+" + "~".repeat(89) + "+");
-            System.out.println(" Page " + currentPage + " of " + pageSize + " ".repeat(50) + "Total Record: " + product.size());
-            System.out.println(" Page Navigation" + " ".repeat(25) + "(F).First (P).Previous (G).Goto (N).Next (L).Last");
-            System.out.println("+" + "~".repeat(89) + "+");
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("No records to display.");
         }
     }
 
@@ -117,7 +121,7 @@ public class ProductView implements Color {
         System.out.println("#".repeat(15));
     }
 
-    public void randomDisplay(List<Product> product){
+    /*public void randomDisplay(List<Product> product){
         System.out.println("Products List as Table");
         Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
         table.setColumnWidth(0,15,20);
@@ -125,8 +129,8 @@ public class ProductView implements Color {
         table.setColumnWidth(2,15,20);
         table.setColumnWidth(3,15,20);
         table.setColumnWidth(4,15,20);
-        table.addCell("Code");
-        table.addCell("Name");
+        table.addCell(yellow+"Code");
+        table.addCell(yellow+"Name");
         table.addCell("Price");
         table.addCell("QTY");
         table.addCell("Imported At");
@@ -155,7 +159,7 @@ public class ProductView implements Color {
         }
 
 
-    }
+    }*/
 
 
         // Method to display product details
