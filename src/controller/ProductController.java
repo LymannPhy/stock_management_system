@@ -83,7 +83,7 @@ public class ProductController implements Color {
     }
 
 
-    /*public void index(){
+    public void index(){
         products.clear();
         usedProductCodes.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
@@ -97,13 +97,13 @@ public class ProductController implements Color {
                 if (product != null) {
                     products.add(product);
                     usedProductCodes.add(product.getCode());
-                    if (count == 100) System.out.print("\r♨️ Data is Loading ...../");
+                    /*if (count == 100) System.out.print("\r♨️ Data is Loading ...../");
                     if (count == 200) {
                         System.out.print("\r♨️ Data is Loading .....\\ ");
                         count=1;
                     }
                     count++;
-                    i++;
+                    i++;*/
                 }
             }
             long endTime = System.nanoTime(); // End time
@@ -113,11 +113,11 @@ public class ProductController implements Color {
             System.err.println("Error reading data from file: " + e.getMessage());
         }
         System.out.println();
-    }*/
+    }
 
     private AtomicInteger count = new AtomicInteger();
     private ExecutorService executor;
-    public void index() {
+    /*public void index() {
         executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
             String line;
@@ -126,16 +126,10 @@ public class ProductController implements Color {
             // Start a separate thread for progress updates
             Thread progressThread = startProgressUpdateThread();
             while ((line = reader.readLine()) != null) {
-                String finalLine = line;
-                executor.submit(() -> processLine(finalLine));
-            }
-            while ((line = reader.readLine()) != null) {
                 Product product = parseProductLine(line);
                 if (product != null) {
                     products.add(product);
                     usedProductCodes.add(product.getCode());
-                    String finalLine = line;
-                    executor.submit(() -> processLine(finalLine));
                 }
             }
             executor.shutdown();
@@ -150,7 +144,7 @@ public class ProductController implements Color {
         } catch (IOException | InterruptedException e) {
             System.err.println("Error: " + e.getMessage());
         }
-    }
+    }*/
 
     private void processLine(String line) {
         count.incrementAndGet();
