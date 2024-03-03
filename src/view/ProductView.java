@@ -80,7 +80,7 @@ public class ProductView implements Color {
             }
             System.out.println(table.render());
             System.out.println("+" + "~".repeat(89) + "+");
-            System.out.println(" Page " + currentPage + " of " + pageSize + " ".repeat(58) + "Total Record: " + product.size());
+            System.out.println(" Page " + currentPage + " of " + pageSize + " ".repeat(50) + "Total Record: " + product.size());
             System.out.println(" Page Navigation" + " ".repeat(25) + "(F).First (P).Previous (G).Goto (N).Next (L).Last");
             System.out.println("+" + "~".repeat(89) + "+");
         } catch (IndexOutOfBoundsException e) {
