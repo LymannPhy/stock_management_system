@@ -138,6 +138,7 @@ public class ProductController implements Color {
 
 
     // choice 1
+    // choice 1
     public void randomWrite() {
         System.out.print("➡️ Enter random amount = ");
         int amount = scanner.nextInt();
