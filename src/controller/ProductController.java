@@ -370,6 +370,7 @@ public class ProductController implements Color {
             } catch (IOException e) {
                 System.err.println("Error committing changes: " + e.getMessage());
             }
+            delete=false;
             return;
         }
         if (products.isEmpty()){

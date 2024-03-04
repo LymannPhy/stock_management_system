@@ -60,7 +60,7 @@ public class ProductView implements Color {
 
         System.out.println("#"+"=".repeat(32)+" Products List as Table "+"=".repeat(32)+"#");
         Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
-        CellStyle cellStyle = new CellStyle(CellStyle.HorizontalAlign.center);
+        CellStyle cellStyle = new CellStyle(CellStyle.HorizontalAlign.CENTER);
         table.setColumnWidth(0,15,20);
         table.setColumnWidth(1,15,20);
         table.setColumnWidth(2,15,20);
