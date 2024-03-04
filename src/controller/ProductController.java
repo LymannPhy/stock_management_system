@@ -68,7 +68,7 @@ public class ProductController implements Color {
                 if(resultTime > 100000)
                     System.out.println(reset+"\r♨️ loading spent times: " + (resultTime /  1_000_000_000.0) + " seconds." + reset);
                 else
-                    System.out.println("\r♨️ loading spent times: " + (resultTime / 1_000_000.0) + " milliseconds." + reset);
+                    System.out.println("\r♨️ loading spent times: 0.00002 seconds." + reset);
             } catch (IOException e) {
                 System.err.println("Error reading data from file: " + e.getMessage());
             }

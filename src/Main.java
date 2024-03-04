@@ -158,11 +158,7 @@ public class Main {
                 case "x"-> {
                     if (!controller.areChangesCommitted()) {
                         System.out.println("Changes have not been committed yet.");
-                        System.out.print("Do you want to commit changes before exiting?[Y/n]: ");
-                        String commitDecision = scanner.nextLine().trim().toLowerCase();
-                        if (commitDecision.equals("y")) {
-                            controller.commitChanges();
-                        }
+                        controller.commitChanges();
                         controller.clearFile("data/transaction.dat");
                     }
                     System.out.println("Exiting the program.");
