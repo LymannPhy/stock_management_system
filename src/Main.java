@@ -168,7 +168,7 @@ public class Main {
                     System.out.println("Exiting the program.");
                     return;
                 }
-                case "cl"->{
+                case "*"->{
                     System.out.print("[#] Are you sure you want to clear all the data in our data source?? [Y/N] :");
                     String answer = new Scanner(System.in).next();
                     if (answer.equalsIgnoreCase("y")){

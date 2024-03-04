@@ -6,7 +6,6 @@ import view.ProductView;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +14,6 @@ import java.util.*;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 
 import static model.Product.parseProductLine;
 
@@ -164,7 +162,6 @@ public class ProductController implements Color {
             System.out.println(reset+"♨️ write "+amount+" products spent spent: " + (resultTime / 1_000_000.0) + " milliseconds.");
     }
 
-    // Helper method to get the last product number from the transaction file
     // Helper method to get the last product number from the transaction file
     private int getLastProductNumber() {
         int lastProductNumber = 0;
@@ -329,71 +326,53 @@ public class ProductController implements Color {
         return file.exists() && file.length() > 0;
     }
 
-    /*public void deleteProductByCode(String code){
-        System.out.println("[#] Are you sure you want to delete this product's ??? [Y/N]: ");
-        String answer = new Scanner(System.in).next();
-        if (answer.equalsIgnoreCase("y")) {
-            for (int i = 0; i < products.size(); i++) {
-                // Get the product at the current index
-                Product product = products.get(i);
-
-                // Check if the code of the current product matches the given code
-                if (product.getCode().equals(code)) {
-                    // Remove the product from the list
-                    products.remove(i);
-                    // Decrement the index as the size of the list has decreased
-                    i--;
-                    writeProductsToFile();
-                    delete=true;
-                    break;
-                }
-            }
-        }else if (answer.equalsIgnoreCase("n")){
-            System.out.println("[#] You didn't delete anything.....");
-            delete=false;
-        }
-    }*/
-
-
-
     public void commitChanges() {
-        if (delete){
-            try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
-                 BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    writer.write(line);
-                    writer.newLine();
+        System.out.print("❔ Are you sure you want to commit? [Y/N]: ");
+        String answer = scanner.nextLine();
+        if(answer.equalsIgnoreCase("y")){
+
+            if (delete){
+                try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
+                     BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        writer.write(line);
+                        writer.newLine();
+                    }
+                    System.out.println(blue+"✅ Changes committed successfully!"+reset);
+                    this.changesCommitted = true; // Set the flag indicating changes have been committed
+                } catch (IOException e) {
+                    System.err.println("Error committing changes: " + e.getMessage());
                 }
-                System.out.println(blue+"✅ Changes committed successfully!"+reset);
-                this.changesCommitted = true; // Set the flag indicating changes have been committed
-            } catch (IOException e) {
-                System.err.println("Error committing changes: " + e.getMessage());
-            }
-            delete=false;
-            return;
-        }
-        if (products.isEmpty()){
-            System.out.println(yellow+"⚠️ No data, can't commit...!");
-        }
-        else{
-            if (!hasUncommittedTransactions()) {
-                System.out.println("No uncommitted transactions to commit.");
+                delete=false;
                 return;
             }
-            try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
-                 BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    writer.write(line);
-                    writer.newLine();
+            if (products.isEmpty()){
+                System.out.println(yellow+"⚠️ No data, can't commit...!");
+            }
+            else{
+                if (!hasUncommittedTransactions()) {
+                    System.out.println("No uncommitted transactions to commit.");
+                    return;
                 }
-                System.out.println(blue+"✅ Changes committed successfully!"+reset);
-                this.changesCommitted = true; // Set the flag indicating changes have been committed
-            } catch (IOException e) {
-                System.err.println("Error committing changes: " + e.getMessage());
+                try (BufferedReader reader = new BufferedReader(new FileReader("data/transaction.dat"));
+                     BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        writer.write(line);
+                        writer.newLine();
+                    }
+                    System.out.println(blue+"✅ Changes committed successfully!"+reset);
+                    this.changesCommitted = true; // Set the flag indicating changes have been committed
+                } catch (IOException e) {
+                    System.err.println("Error committing changes: " + e.getMessage());
+                }
             }
         }
+        else if(answer.equalsIgnoreCase("n")){
+            System.out.println("❗You didn't commit anything...!");
+        }
+        else System.out.println("Invalid input...!");
     }
 
     public boolean areChangesCommitted() {
@@ -555,102 +534,6 @@ public class ProductController implements Color {
         return String.format("%s,%s,%.2f,%d,%s", product.getCode(), product.getName(), product.getPrice(), product.getQty(), product.getImported_at());
     }
 
-    // Method to restore product data from a backup file
-    /*public void restoreData() {
-        products.clear();
-        usedProductCodes.clear();
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/product.dat"))) {
-            String line;
-            int i=0;
-            int count = 1;
-            long startTime = System.nanoTime();
-            while ((line = reader.readLine()) != null) {
-                Product product = parseProductLine(line);
-                if (product != null) {
-                    products.add(product);
-                    usedProductCodes.add(product.getCode());
-                    if (count == 100) System.out.print(green+"\r♨️ Data is Loading ...../");
-                    if (count == 200) {
-                        System.out.print("\r♨️ Data is Loading .....\\ ");
-                        count=1;
-                    }
-                    count++;
-                    i++;
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading data from file: " + e.getMessage());
-        }
-
-
-        File backupFolder = new File("backup");
-        File[] backupFiles = backupFolder.listFiles((dir, name) -> name.endsWith(".bak"));
-        if (backupFiles == null || backupFiles.length == 0) {
-            System.out.println("No backup files found in the backup_product folder.");
-            return;
-        }
-
-        System.out.println("Available backup files:");
-        for (int i = 0; i < backupFiles.length; i++) {
-            System.out.println((i + 1) + ". " + backupFiles[i].getName());
-        }
-
-        System.out.print("Enter the number of the backup file to restore: ");
-        Scanner scanner = new Scanner(System.in);
-        int choice;
-        try {
-            choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline character
-        } catch (InputMismatchException e) {
-            System.out.println("Invalid input. Please enter a valid number.");
-            scanner.nextLine(); // Consume invalid input
-            return;
-        }
-        if (choice < 1 || choice > backupFiles.length) {
-            System.out.println("Invalid choice.");
-            return;
-        }
-
-        String filePath = backupFiles[choice - 1].getPath();
-        List<Product> restoredProducts = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 5) { // Assuming the format is consistent
-                    Product product = new Product();
-                    product.setCode(parts[0]);
-                    product.setName(parts[1]);
-                    product.setPrice(Double.parseDouble(parts[2]));
-                    product.setQty(Integer.parseInt(parts[3]));
-                    product.setImported_at(parts[4]);
-                    restoredProducts.add(product);
-                } else {
-                    System.out.println("Invalid data format in the file.");
-                }
-            }
-            // Replace the existing product data with the restored data
-            products.clear();
-            products.addAll(restoredProducts);
-            System.out.println("Product data restored successfully from " + filePath);
-
-            // Write the restored data to "product.dat" file
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/product.dat"))) {
-                for (Product product : restoredProducts) {
-                    writer.write(product.getCode() + "," + product.getName() + "," + product.getPrice() + ","
-                            + product.getQty() + "," + product.getImported_at() + "\n");
-                }
-                System.out.println("Restored data written to product.dat");
-            } catch (IOException e) {
-                System.out.println("Error writing restored data to product.dat: " + e.getMessage());
-            }
-
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: File not found at path " + filePath);
-        } catch (IOException e) {
-            System.out.println("Error reading product data: " + e.getMessage());
-        }
-    }*/
 
     public void restoreData() {
         File backupFolder = new File("backup");

@@ -28,15 +28,29 @@ public class ProductView implements Color {
                         currentPage = 1;
                     }
                     case "p" -> {
-                        currentPage -= 1;
+                        if(currentPage == 1)
+                            currentPage = 1;
+                        else
+                            currentPage -= 1;
                     }
                     case "g" -> {
                         System.out.print("Enter numberPage to navigate = ");
                         Integer pageInput = scanner.nextInt();
                         currentPage = pageInput;
+                        if(pageInput > pageSize){
+                            System.out.println("The maximum pages is "+pageSize);
+                            currentPage = pageSize;
+                        }
+                        else if(currentPage < 1){
+                            System.out.println("The minimum page is "+1);
+                            currentPage = 1;
+                        }
                     }
                     case "n" -> {
-                        currentPage += 1;
+                        if( currentPage == pageSize)
+                            currentPage = pageSize;
+                        else
+                            currentPage += 1;
                     }
                     case "l" -> {
                         currentPage = pageSize;
@@ -60,7 +74,7 @@ public class ProductView implements Color {
 
         System.out.println("#"+"=".repeat(32)+" Products List as Table "+"=".repeat(32)+"#");
         Table table = new Table(5, BorderStyle.UNICODE_BOX_DOUBLE_BORDER_WIDE);
-        CellStyle cellStyle = new CellStyle(CellStyle.HorizontalAlign.CENTER);
+        CellStyle cellStyle = new CellStyle(CellStyle.HorizontalAlign.center);
         table.setColumnWidth(0,15,20);
         table.setColumnWidth(1,15,20);
         table.setColumnWidth(2,15,20);
